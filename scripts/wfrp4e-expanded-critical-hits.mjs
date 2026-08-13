@@ -4620,7 +4620,7 @@ function Fu() {
 			try {
 				u = await zu(a);
 			} catch (e) {
-				return bu("Expanded Critical Hits could not resolve the critical source item. See the browser console for details.", t, e);
+				return bu("Drowsy's WFRP4e Expanded Damage System could not resolve the critical source item. See the browser console for details.", t, e);
 			}
 			let e = Nu(u);
 			d = e.clues, f = e.resolution, p = ae(e.resolution.categories);
@@ -4640,7 +4640,7 @@ function Fu() {
 			reason: c ? "damage category unavailable" : "location unavailable"
 		}), i(t, a, o);
 		let m = Fl(!!game.settings.get("wfrp4e", "uiaCrits")), h = Nl(m, p, c);
-		if (!n(h)) return bu(`Expanded Critical Hits table ${h} is missing from the module compendium.`, h);
+		if (!n(h)) return bu(`Drowsy's WFRP4e Expanded Damage System table ${h} is missing from the module compendium.`, h);
 		r(`${e} | Critical replacement rolling expanded table`, {
 			table: t,
 			expandedTableKey: h,
@@ -4652,9 +4652,9 @@ function Fu() {
 			let e = await Iu(h, a, o);
 			if (e !== void 0) return e;
 		} catch (e) {
-			return bu(`Expanded Critical Hits could not roll ${h}. See the browser console for details.`, h, e);
+			return bu(`Drowsy's WFRP4e Expanded Damage System could not roll ${h}. See the browser console for details.`, h, e);
 		}
-		return bu(`Expanded Critical Hits could not use WFRP's RollTable API for ${h}.`, h);
+		return bu(`Drowsy's WFRP4e Expanded Damage System could not use WFRP's RollTable API for ${h}.`, h);
 	}, Pu = !0, r(`${e} | Critical replacement patch installed.`);
 }
 async function Iu(e, t, n) {
@@ -5172,7 +5172,7 @@ function tf() {
 	}
 	for (let e of _) {
 		let t = y[e];
-		i[t] = "Expanded Critical Hits damage type marker. A critical hit may roll on the matching expanded critical table.", n[t] = !1;
+		i[t] = "Drowsy's WFRP4e Expanded Damage System damage type marker. A critical hit may roll on the matching expanded critical table.", n[t] = !1;
 	}
 	r(`${e} | Damage qualities registered`, {
 		count: _.length,
@@ -5224,7 +5224,7 @@ function ff(e) {
 	if (!(t instanceof Element) || !Kl()) return;
 	let n = t.closest(`[data-action="clickTable"][${rf}]`);
 	!(n instanceof HTMLElement) || !gf(n.dataset.table) || (e.preventDefault(), e.stopPropagation(), e.stopImmediatePropagation(), pf(n).catch((e) => {
-		mf("Expanded Critical Hits could not roll an annotated zero-wound critical. See the browser console for details.", e);
+		mf("Drowsy's WFRP4e Expanded Damage System could not roll an annotated zero-wound critical. See the browser console for details.", e);
 	}));
 }
 async function pf(e) {

@@ -1,7 +1,7 @@
-# WFRP4e Expanded Critical Hits
+# Drowsy's WFRP4e Expanded Damage System
 
-Expanded Critical Hits adds Josef Tham-inspired expanded critical hit tables for the WFRP4e system
-in Foundry VTT.
+Drowsy's WFRP4e Expanded Damage System adds Josef Tham-inspired expanded critical hit tables and
+damage tools for the WFRP4e system in Foundry VTT.
 
 ## Installation
 
@@ -11,7 +11,7 @@ Use this manifest URL in Foundry's **Install Module** dialog:
 https://github.com/jeremyglebe/FoundryVTT-WFRP-Expanded-Wounding/releases/latest/download/module.json
 ```
 
-After installation, enable **WFRP4e Expanded Critical Hits** in your WFRP4e world.
+After installation, enable **Drowsy's WFRP4e Expanded Damage System** in your WFRP4e world.
 
 ## What It Adds
 
@@ -26,7 +26,7 @@ After installation, enable **WFRP4e Expanded Critical Hits** in your WFRP4e worl
 
 ## Basic Usage
 
-1. Open **Configure Settings > Module Settings > WFRP4e Expanded Critical Hits**.
+1. Open **Configure Settings > Module Settings > Drowsy's WFRP4e Expanded Damage System**.
 2. Enable **Replace WFRP Critical Tables**.
 3. Add one or more **Damage Type** properties to weapons, damaging spells, or damaging prayers.
 4. When a supported critical roll occurs, the module routes it to the matching expanded table.
