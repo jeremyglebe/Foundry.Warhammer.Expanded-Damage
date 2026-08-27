@@ -29,14 +29,19 @@ After installation, enable **Drowsy's WFRP4e Expanded Damage System** in your WF
 1. Open **Configure Settings > Module Settings > Drowsy's WFRP4e Expanded Damage System**.
 2. Enable **Replace WFRP Critical Tables**.
 3. Add one or more **Damage Type** properties to weapons, damaging creature traits, damaging spells,
-   or damaging prayers when you want to override their normal resolution.
+   or damaging Miracles (WFRP `prayer` items) when you want to override their normal resolution.
 4. When a supported critical roll occurs, the module routes it to the matching expanded table.
 
 Damaging creature traits default to **Teeth & Claws** when they do not specify a Damage Type.
 Damaging spells default to **Energy** according to their lore; all lores currently use Energy, with
-room for lore-specific defaults in future releases. An explicit Damage Type on the individual trait
-or spell takes priority. Other source items with no configured or inferred damage type fall through
-to WFRP4e's normal critical behavior.
+room for lore-specific defaults in future releases. An explicit Damage Type on the individual trait,
+spell, or Miracle takes priority. Miracles do not currently receive a default Damage Type. Other
+source items with no configured or inferred damage type fall through to WFRP4e's normal critical
+behavior.
+
+Every supported item displays a separate **Damage Type** row on its Details tab. Explicit types are
+shown as-is, creature-trait and spell defaults are labeled **Default**, and weapon types resolved
+from their qualities or weapon group are labeled **Inferred**.
 
 ## Damage Console
 
