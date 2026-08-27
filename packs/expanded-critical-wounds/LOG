@@ -1,5 +1,3 @@
-2026/08/26-16:28:27.653237 171417000 Delete type=3 #1
-2026/08/26-16:28:27.663410 171caf000 Level-0 table #5: started
-2026/08/26-16:28:27.669220 171caf000 Level-0 table #5: 801991 bytes OK
-2026/08/26-16:28:27.669357 171caf000 Delete type=0 #3
-2026/08/26-16:28:27.669510 171caf000 Manual compaction at level-0 from '!folders!F0llIlvLNR1k53LI' @ 72057594037927935 : 1 .. '!items.effects!IzsnhvESjsoFYupK.1f0a60435fe94b39' @ 0 : 0; will stop at (end)
+2026/08/26-20:52:45.704607 16ea7b000 Recovering log #4
+2026/08/26-20:52:45.705131 16ea7b000 Delete type=0 #4
+2026/08/26-20:52:45.705166 16ea7b000 Delete type=3 #2

@@ -2,7 +2,7 @@
   "id": "wfrp4e-expanded-critical-hits",
   "title": "Drowsy's WFRP4e Expanded Damage System",
   "description": "Expanded damage and critical hit support for the WFRP4e game system.",
-  "version": "0.1.18",
+  "version": "0.1.19",
   "authors": [
     {
       "name": "Drowsy's WFRP4e Expanded Damage System contributors"
@@ -40,6 +40,13 @@
       "path": "packs/expanded-critical-tables",
       "type": "RollTable",
       "system": "wfrp4e"
+    },
+    {
+      "name": "expanded-critical-details",
+      "label": "Journals",
+      "path": "packs/expanded-critical-details",
+      "type": "JournalEntry",
+      "system": "wfrp4e"
     }
   ],
   "packFolders": [
@@ -48,7 +55,8 @@
       "sorting": "a",
       "packs": [
         "expanded-critical-wounds",
-        "expanded-critical-tables"
+        "expanded-critical-tables",
+        "expanded-critical-details"
       ]
     }
   ],
@@ -61,5 +69,5 @@
   ],
   "url": "https://github.com/jeremyglebe/FoundryVTT-WFRP-Expanded-Wounding",
   "manifest": "https://github.com/jeremyglebe/FoundryVTT-WFRP-Expanded-Wounding/releases/latest/download/module.json",
-  "download": "https://github.com/jeremyglebe/FoundryVTT-WFRP-Expanded-Wounding/releases/download/v0.1.18/module.zip"
+  "download": "https://github.com/jeremyglebe/FoundryVTT-WFRP-Expanded-Wounding/releases/download/v0.1.19/module.zip"
 }

@@ -4439,8 +4439,14 @@ function gu() {
 	t.api = hu();
 }
 //#endregion
+//#region src/functions/critical-hits/presentation/index.ts
+var _u = /^ech-crit-(?:core|upinarms)-(?:arrowsbolts|bullets|crushing|cutting|flameenergy|piercing|shrapnelshot|sling|teethclaws|unarmed)-(?:arm|body|head|leg)$/;
+function vu(e) {
+	return _u.test(e);
+}
+//#endregion
 //#region src/module/wfrp4e/critical-replacement/debug.ts
-function _u(e) {
+function yu(e) {
 	return {
 		criticalLocation: e.criticalLocation,
 		messageId: e.messageId,
@@ -4448,8 +4454,8 @@ function _u(e) {
 		sourceItemUuid: e.sourceItemUuid
 	};
 }
-function vu(e) {
-	let t = yu(e);
+function bu(e) {
+	let t = xu(e);
 	if (t) return {
 		id: t.id,
 		name: t.name,
@@ -4457,21 +4463,21 @@ function vu(e) {
 		uuid: t.uuid
 	};
 }
-function yu(e) {
+function xu(e) {
 	return typeof e == "object" && e ? e : void 0;
 }
 //#endregion
 //#region src/module/wfrp4e/critical-replacement/failure.ts
-function bu(t, n, r) {
+function Su(t, n, r) {
 	return o(`${e} | ${t}`, r), ui.notifications?.error(t), [
 		"<div class=\"wfrp4e chat-card\">",
 		"<h3>Expanded Critical Hit Failed</h3>",
-		`<p>${xu(t)}</p>`,
-		`<p><strong>Table:</strong> ${xu(n)}</p>`,
+		`<p>${Cu(t)}</p>`,
+		`<p><strong>Table:</strong> ${Cu(n)}</p>`,
 		"</div>"
 	].join("");
 }
-function xu(e) {
+function Cu(e) {
 	return e.replace(/[&<>"']/g, (e) => ({
 		"&": "&amp;",
 		"<": "&lt;",
@@ -4482,31 +4488,31 @@ function xu(e) {
 }
 //#endregion
 //#region src/module/wfrp4e/critical-replacement/item-posting.ts
-function Su(e, t) {
-	if (!Tu(e)) return;
+function wu(e, t) {
+	if (!Du(e)) return;
 	let n = t.criticalLocation;
 	if (e.type !== "critical" || typeof n != "string") return e;
 	let r = e.toObject, i = Item?.implementation;
 	if (typeof r != "function" || typeof i != "function") return e;
-	let a = r.call(e), o = Cu(Cu(a, "system"), "location"), s = game.wfrp4e?.config?.locations ?? {};
+	let a = r.call(e), o = Tu(Tu(a, "system"), "location"), s = game.wfrp4e?.config?.locations ?? {};
 	return o.key = n, o.value = s[n] ?? n, new i(a);
 }
-function Cu(e, t) {
-	let n = wu(e[t]);
+function Tu(e, t) {
+	let n = Eu(e[t]);
 	if (n) return n;
 	let r = {};
 	return e[t] = r, r;
 }
-function wu(e) {
+function Eu(e) {
 	return typeof e == "object" && e ? e : void 0;
 }
-function Tu(e) {
+function Du(e) {
 	let t = e;
 	return typeof t == "object" && !!t && typeof t.postItem == "function";
 }
 //#endregion
 //#region src/module/wfrp4e/runtime-values.ts
-function Eu(e) {
+function Ou(e) {
 	return Array.isArray(e) ? e : [];
 }
 function Q(e) {
@@ -4514,32 +4520,32 @@ function Q(e) {
 }
 //#endregion
 //#region src/module/wfrp4e/quality-extraction.ts
-function Du(e) {
-	let t = Ou(e);
+function ku(e) {
+	let t = Au(e);
 	return {
 		explicitCategories: ie(t),
 		weaponPropertyKeys: t,
-		weaponTypeKeys: ju(e)
+		weaponTypeKeys: Nu(e)
 	};
 }
-function Ou(e) {
+function Au(e) {
 	let t = Q(e), n = Q(t?.system), r = Q(t?.properties), i = Q(n?.properties), a = [Q(r?.qualities), Q(i?.qualities)], o = /* @__PURE__ */ new Set();
 	for (let e of a) for (let t of Object.keys(e ?? {})) o.add(t);
-	let s = Eu(Q(n?.qualities)?.value);
+	let s = Ou(Q(n?.qualities)?.value);
 	for (let e of s) {
 		let t = Q(e), n = t?.name;
-		typeof n == "string" && ku(t) && o.add(n);
+		typeof n == "string" && ju(t) && o.add(n);
 	}
 	return [...o];
 }
-function ku(e) {
+function ju(e) {
 	let t = e?.group;
-	return Au(t) ? e?.active === !0 : !0;
+	return Mu(t) ? e?.active === !0 : !0;
 }
-function Au(e) {
+function Mu(e) {
 	return typeof e == "number" ? Number.isFinite(e) : typeof e == "string" && e.trim() !== "" && Number.isFinite(Number(e));
 }
-function ju(e) {
+function Nu(e) {
 	let t = Q(Q(e)?.system), n = /* @__PURE__ */ new Set();
 	for (let e of [
 		t?.weaponGroup,
@@ -4549,16 +4555,16 @@ function ju(e) {
 		t?.ammunitionGroup,
 		t?.ammoGroup,
 		t?.category
-	]) Mu(e, n);
+	]) Pu(e, n);
 	return [...n];
 }
-function Mu(e, t) {
+function Pu(e, t) {
 	if (typeof e == "string") {
 		t.add(e);
 		return;
 	}
 	if (Array.isArray(e)) {
-		for (let n of e) Mu(n, t);
+		for (let n of e) Pu(n, t);
 		return;
 	}
 	let n = Q(e);
@@ -4569,12 +4575,12 @@ function Mu(e, t) {
 		"label",
 		"value",
 		"type"
-	]) Mu(n[e], t);
+	]) Pu(n[e], t);
 }
 //#endregion
 //#region src/module/wfrp4e/damage-category-resolution.ts
-function Nu(e) {
-	let t = Du(e);
+function Fu(e) {
+	let t = ku(e);
 	return {
 		clues: t,
 		resolution: Cl({
@@ -4588,9 +4594,9 @@ function Nu(e) {
 }
 //#endregion
 //#region src/module/wfrp4e/critical-replacement.ts
-var Pu = !1;
-function Fu() {
-	if (Pu) {
+var Iu = !1;
+function Lu() {
+	if (Iu) {
 		r(`${e} | Critical replacement patch already installed.`);
 		return;
 	}
@@ -4605,30 +4611,39 @@ function Fu() {
 	}
 	let n = t.findTable.bind(t), i = t.formatChatRoll.bind(t);
 	t.formatChatRoll = async (t, a = {}, o = null) => {
-		let s = Bu(t);
+		if (vu(t)) {
+			try {
+				let e = await Ru(t, a, o);
+				if (e !== void 0) return e;
+			} catch (e) {
+				return Su(`Drowsy's WFRP4e Expanded Damage System could not roll ${t}. See the browser console for details.`, t, e);
+			}
+			return i(t, a, o);
+		}
+		let s = Hu(t);
 		if (!Kl() || !s) return s && r(`${e} | Critical replacement fallthrough`, {
 			table: t,
 			reason: "replacement disabled",
-			options: _u(a)
+			options: yu(a)
 		}), i(t, a, o);
-		let c = Ru(t, a), l = Te(a.messageId), u, d, f, p = l?.category;
+		let c = Bu(t, a), l = Te(a.messageId), u, d, f, p = l?.category;
 		if (r(`${e} | Critical replacement inspecting WFRP critical roll`, {
 			table: t,
 			location: c,
-			options: _u(a)
+			options: yu(a)
 		}), !p) {
 			try {
-				u = await zu(a);
+				u = await Vu(a);
 			} catch (e) {
-				return bu("Drowsy's WFRP4e Expanded Damage System could not resolve the critical source item. See the browser console for details.", t, e);
+				return Su("Drowsy's WFRP4e Expanded Damage System could not resolve the critical source item. See the browser console for details.", t, e);
 			}
-			let e = Nu(u);
+			let e = Fu(u);
 			d = e.clues, f = e.resolution, p = ae(e.resolution.categories);
 		}
 		if (r(`${e} | Critical replacement damage category resolution`, {
 			table: t,
 			location: c,
-			sourceItem: vu(u),
+			sourceItem: bu(u),
 			categoryClues: d,
 			categoryResolution: f,
 			chosenCategory: p,
@@ -4640,7 +4655,7 @@ function Fu() {
 			reason: c ? "damage category unavailable" : "location unavailable"
 		}), i(t, a, o);
 		let m = Fl(!!game.settings.get("wfrp4e", "uiaCrits")), h = Nl(m, p, c);
-		if (!n(h)) return bu(`Drowsy's WFRP4e Expanded Damage System table ${h} is missing from the module compendium.`, h);
+		if (!n(h)) return Su(`Drowsy's WFRP4e Expanded Damage System table ${h} is missing from the module compendium.`, h);
 		r(`${e} | Critical replacement rolling expanded table`, {
 			table: t,
 			expandedTableKey: h,
@@ -4649,26 +4664,26 @@ function Fu() {
 			location: c
 		});
 		try {
-			let e = await Iu(h, a, o);
+			let e = await Ru(h, a, o);
 			if (e !== void 0) return e;
 		} catch (e) {
-			return bu(`Drowsy's WFRP4e Expanded Damage System could not roll ${h}. See the browser console for details.`, h, e);
+			return Su(`Drowsy's WFRP4e Expanded Damage System could not roll ${h}. See the browser console for details.`, h, e);
 		}
-		return bu(`Drowsy's WFRP4e Expanded Damage System could not use WFRP's RollTable API for ${h}.`, h);
-	}, Pu = !0, r(`${e} | Critical replacement patch installed.`);
+		return Su(`Drowsy's WFRP4e Expanded Damage System could not use WFRP's RollTable API for ${h}.`, h);
+	}, Iu = !0, r(`${e} | Critical replacement patch installed.`);
 }
-async function Iu(e, t, n) {
+async function Ru(e, t, n) {
 	let r = game.wfrp4e?.tables?.rollTable;
 	if (typeof r != "function") return;
 	let i = await r.call(game.wfrp4e.tables, e, t, n);
-	if (await Lu(i, t)) return null;
-	let a = Vu(i);
+	if (await zu(i, t)) return null;
+	let a = Uu(i);
 	return t.returnResult ? i : a?.result;
 }
-async function Lu(t, n) {
-	let i = Vu(Vu(t)?.object)?.documentUuid;
+async function zu(t, n) {
+	let i = Uu(Uu(t)?.object)?.documentUuid;
 	if (typeof i != "string") return r(`${e} | Expanded critical result had no document UUID`, { result: t }), !1;
-	let a = Su(await fromUuid(i), n);
+	let a = wu(await fromUuid(i), n);
 	if (!a) throw Error(`Could not resolve expanded critical item ${i}.`);
 	return r(`${e} | Posting expanded critical item`, {
 		documentUuid: i,
@@ -4676,169 +4691,169 @@ async function Lu(t, n) {
 		criticalLocation: n.criticalLocation
 	}), await a.postItem(void 0, { "flags.wfrp4e.sourceMessageId": n.messageId }), !0;
 }
-function Ru(e, t) {
+function Bu(e, t) {
 	let n = t.criticalLocation;
 	return Pl(typeof n == "string" ? n : e.replace(/^crit/i, ""));
 }
-async function zu(e) {
+async function Vu(e) {
 	let t = e.sourceItemUuid;
 	if (typeof t == "string") return await fromUuid(t);
 	let n = e.messageId;
 	if (typeof n != "string") return;
-	let r = Vu(Vu(game.messages.get(n)?.system)?.test), i = Vu(r?.preData);
+	let r = Uu(Uu(game.messages.get(n)?.system)?.test), i = Uu(r?.preData);
 	return r?.item ?? r?.weapon ?? i?.item;
 }
-function Bu(e) {
+function Hu(e) {
 	return /^crit(?:head|body|arm|leg|larm|rarm|lleg|rleg)$/i.test(e);
 }
-function Vu(e) {
+function Uu(e) {
 	return typeof e == "object" && e ? e : void 0;
 }
 //#endregion
 //#region src/module/wfrp4e/wounding-properties/support.ts
-var Hu = "ech-wounding-properties", Uu = new Set(Object.values(y));
-function Wu(e) {
+var Wu = "ech-wounding-properties", Gu = new Set(Object.values(y));
+function Ku(e) {
 	let t = { ...e };
 	for (let e of _) t[y[e]] = b[e];
 	return t;
 }
-function Gu(e) {
-	return Xu(e) || Zu(e);
+function qu(e) {
+	return Qu(e) || $u(e);
 }
-function Ku(e) {
+function Ju(e) {
 	return e?.type === "spell" || e?.type === "prayer";
 }
-function qu(e) {
-	let t = Eu(Q(Q(e?.system)?.qualities)?.value), n = [];
+function Yu(e) {
+	let t = Ou(Q(Q(e?.system)?.qualities)?.value), n = [];
 	for (let e of t) {
 		let t = Q(e)?.name;
 		if (typeof t != "string") continue;
-		let r = ed(t);
+		let r = nd(t);
 		r && n.push(b[r]);
 	}
 	return n;
 }
-function Ju(e) {
+function Xu(e) {
 	if (!(typeof e != "object" || !e)) return e;
 }
-function Yu(e) {
+function Zu(e) {
 	if (typeof e != "object" || !e) return;
 	let t = e;
 	if (!(t.qualities !== void 0 && !Array.isArray(t.qualities))) return t;
 }
-function Xu(e) {
+function Qu(e) {
 	return e?.type === "weapon" || e?.type === "ammunition" || e?.system?.isWeapon === !0;
 }
-function Zu(e) {
-	return (e?.type === "spell" || e?.type === "prayer") && Qu(e.system);
-}
-function Qu(e) {
-	let t = Q(e?.damage), n = Q(e?.magicMissile);
-	return $u(t?.value) || $u(t?.dice) || t?.addSL === !0 || n?.value === !0;
-}
 function $u(e) {
-	return typeof e == "number" ? e !== 0 : typeof e == "string" && e.trim().length > 0;
+	return (e?.type === "spell" || e?.type === "prayer") && ed(e.system);
 }
 function ed(e) {
+	let t = Q(e?.damage), n = Q(e?.magicMissile);
+	return td(t?.value) || td(t?.dice) || t?.addSL === !0 || n?.value === !0;
+}
+function td(e) {
+	return typeof e == "number" ? e !== 0 : typeof e == "string" && e.trim().length > 0;
+}
+function nd(e) {
 	return _.find((t) => y[t] === e);
 }
 //#endregion
 //#region src/module/wfrp4e/wounding-properties/actions.ts
-var td = `.${Hu}__sheet-row a[data-ech-action="configureProperties"]`, nd = /* @__PURE__ */ new Map(), rd = !1;
-function id() {
-	rd ||= (document.addEventListener("click", cd, !0), !0);
-}
-function ad(e) {
-	return e?.uuid;
-}
-function od(e, t) {
-	nd.set(e, t);
+var rd = `.${Wu}__sheet-row a[data-ech-action="configureProperties"]`, id = /* @__PURE__ */ new Map(), ad = !1;
+function od() {
+	ad ||= (document.addEventListener("click", ud, !0), !0);
 }
 function sd(e) {
-	let t = dd();
-	!e || !t || new t(e).render(!0);
+	return e?.uuid;
 }
-function cd(e) {
-	let t = ld(e.target);
-	t && (e.preventDefault(), e.stopPropagation(), ud(t));
+function cd(e, t) {
+	id.set(e, t);
 }
 function ld(e) {
-	if (e instanceof Element) return e.closest(td) ?? void 0;
+	let t = pd();
+	!e || !t || new t(e).render(!0);
 }
-async function ud(e) {
-	let t = e.closest(`.${Hu}__sheet-row`)?.dataset.echItemUuid;
+function ud(e) {
+	let t = dd(e.target);
+	t && (e.preventDefault(), e.stopPropagation(), fd(t));
+}
+function dd(e) {
+	if (e instanceof Element) return e.closest(rd) ?? void 0;
+}
+async function fd(e) {
+	let t = e.closest(`.${Wu}__sheet-row`)?.dataset.echItemUuid;
 	if (!t) return;
 	let n = await fromUuid(t);
-	if (!pd(n)) return;
-	let r = nd.get(t);
+	if (!hd(n)) return;
+	let r = id.get(t);
 	if (r) {
 		r(n);
 		return;
 	}
-	sd(n);
+	ld(n);
 }
-function dd() {
+function pd() {
 	let e = game.wfrp4e?.apps?.ItemProperties;
-	if (fd(e)) return e;
+	if (md(e)) return e;
 }
-function fd(e) {
+function md(e) {
 	return typeof e == "function";
 }
-function pd(e) {
+function hd(e) {
 	return typeof e == "object" && !!e;
 }
 //#endregion
 //#region src/module/wfrp4e/wounding-properties/actor-sheet.ts
-var md = /* @__PURE__ */ new WeakSet();
-function hd(e, t) {
+var gd = /* @__PURE__ */ new WeakSet();
+function _d(e, t) {
 	if (!(t instanceof HTMLElement)) return;
-	let n = gd(t, "combat"), r = gd(t, "trappings");
-	n && (_d(n), vd(e, n)), r && (yd(e, r), !md.has(r) && (new MutationObserver(() => {
-		yd(e, r);
+	let n = vd(t, "combat"), r = vd(t, "trappings");
+	n && (yd(n), bd(e, n)), r && (xd(e, r), !gd.has(r) && (new MutationObserver(() => {
+		xd(e, r);
 	}).observe(r, {
 		childList: !0,
 		subtree: !0
-	}), md.add(r)));
+	}), gd.add(r)));
 }
-function gd(e, t) {
+function vd(e, t) {
 	return e.matches(`section[data-tab="${t}"]`) ? e : e.querySelector(`section[data-tab="${t}"]`) ?? void 0;
 }
-function _d(e) {
+function yd(e) {
 	let t = new Set(Object.values(b)), n = e.querySelectorAll(".item-property-row a[data-action=\"itemPropertyDropdown\"][data-type=\"qualities\"]");
 	for (let e of n) t.has(e.textContent.trim()) && e.classList.add("ech-wounding-property-combat-text");
 }
-function vd(e, t) {
+function bd(e, t) {
 	let n = t.querySelectorAll(".list-row[data-uuid] .item-property-row:not([data-ech-inference-checked=\"true\"])");
 	for (let t of n) {
 		t.dataset.echInferenceChecked = "true";
-		let n = Sd(e, t);
-		if (Td(n)) for (let e of n.categories) t.append(Ed("combat", e, n));
+		let n = wd(e, t);
+		if (Dd(n)) for (let e of n.categories) t.append(Od("combat", e, n));
 	}
 }
-function yd(e, t) {
-	bd(t), xd(e, t);
+function xd(e, t) {
+	Sd(t), Cd(e, t);
 }
-function bd(e) {
+function Sd(e) {
 	let t = new Set(Object.values(b)), n = e.querySelectorAll(".tags .tag:not(.ech-inferred-damage-type)");
 	for (let e of n) t.has(e.textContent.trim()) && e.classList.add("ech-wounding-property-trappings-badge");
 }
-function xd(e, t) {
+function Cd(e, t) {
 	let n = t.querySelectorAll(".list-row[data-uuid] .tags:not([data-ech-inference-checked=\"true\"])");
 	for (let t of n) {
 		t.dataset.echInferenceChecked = "true";
-		let n = Sd(e, t);
-		if (Td(n)) for (let e of n.categories) t.append(Ed("trappings", e, n));
+		let n = wd(e, t);
+		if (Dd(n)) for (let e of n.categories) t.append(Od("trappings", e, n));
 	}
 }
-function Sd(t, n) {
+function wd(t, n) {
 	let i = n.closest(".list-row[data-uuid]")?.dataset.uuid;
 	if (i) try {
-		let n = Cd(t, i);
-		if (!wd(n)) {
+		let n = Td(t, i);
+		if (!Ed(n)) {
 			r(`${e} | Inferred damage display skipped for ${i}: item unavailable or unsupported.`);
 			return;
 		}
-		let a = Nu(n).resolution;
+		let a = Fu(n).resolution;
 		return r(`${e} | Inferred damage display resolved ${i}: source=${a.source} categories=${a.categories.join(",") || "none"}`), a;
 	} catch (t) {
 		r(`${e} | Could not display inferred damage type`, {
@@ -4848,26 +4863,26 @@ function Sd(t, n) {
 		return;
 	}
 }
-function Cd(e, t) {
+function Td(e, t) {
 	let n = Q(e), r = Q((Q(n?.actor) ?? Q(n?.document))?.items), i = r?.get, a = t.split(".").at(-1);
 	if (!(typeof i != "function" || !a)) return i.call(r, a);
 }
-function wd(e) {
+function Ed(e) {
 	let t = Q(e), n = Q(t?.system);
 	return t?.type === "weapon" || t?.type === "ammunition" || n?.isWeapon === !0;
 }
-function Td(e) {
+function Dd(e) {
 	return e?.source === "weaponProperty" || e?.source === "weaponType";
 }
-function Ed(e, t, n) {
-	let r = document.createElement(e === "combat" ? "span" : "div"), i = Dd(t, n.source, n.matches);
+function Od(e, t, n) {
+	let r = document.createElement(e === "combat" ? "span" : "div"), i = kd(t, n.source, n.matches);
 	return r.classList.add("ech-inferred-damage-type", `ech-inferred-damage-type--${e}`), e === "trappings" && r.classList.add("tag"), r.dataset.echDamageCategory = t, r.dataset.tooltip = i, r.setAttribute("aria-label", i), r.textContent = ee[t], r;
 }
-function Dd(e, t, n) {
-	let r = n.filter((t) => t.category === e).map((e) => Od(e.key, t)), i = t === "weaponProperty" ? "item property" : "weapon type";
+function kd(e, t, n) {
+	let r = n.filter((t) => t.category === e).map((e) => Ad(e.key, t)), i = t === "weaponProperty" ? "item property" : "weapon type";
 	return r.length > 0 ? `Inferred from ${r.join(", ")}` : `Inferred from ${i}`;
 }
-function Od(e, t) {
+function Ad(e, t) {
 	if (t === "weaponProperty") {
 		let t = game.wfrp4e?.utility?.qualityList?.() ?? {}, n = wl(e);
 		for (let [e, r] of Object.entries(t)) if (wl(e) === n || wl(r) === n) return r;
@@ -4876,10 +4891,10 @@ function Od(e, t) {
 }
 //#endregion
 //#region src/module/wfrp4e/wounding-properties/debug.ts
-function kd(e) {
+function jd(e) {
 	if (!(typeof e != "object" || !e)) return e.constructor?.name;
 }
-function Ad(e) {
+function Md(e) {
 	if (e) return {
 		id: e.id,
 		name: e.name,
@@ -4889,29 +4904,29 @@ function Ad(e) {
 }
 //#endregion
 //#region src/module/wfrp4e/wounding-properties/sheet-box.ts
-function jd(e, t, n) {
+function Nd(e, t, n) {
 	let r = document.createElement("div");
-	r.classList.add("attribute-box", "top-label", `${Hu}__sheet-row`);
-	let i = ad(n);
-	i && (r.dataset.echItemUuid = i, od(i, Nd(e, n)));
+	r.classList.add("attribute-box", "top-label", `${Wu}__sheet-row`);
+	let i = sd(n);
+	i && (r.dataset.echItemUuid = i, cd(i, Fd(e, n)));
 	let a = document.createElement("div");
 	a.classList.add("label"), a.style.gridColumn = "1 / span 12", a.innerHTML = "<label><a data-ech-action=\"configureProperties\">Damage Type <i class=\"fas fa-cog\"></i></a></label>";
 	let o = document.createElement("div");
 	o.classList.add("field"), o.style.gridColumn = "1 / span 12";
 	let s = document.createElement("input");
-	return s.type = "text", s.value = t.join(","), s.readOnly = !0, o.append(s), r.append(a, o), Md(r, n), r;
+	return s.type = "text", s.value = t.join(","), s.readOnly = !0, o.append(s), r.append(a, o), Pd(r, n), r;
 }
-function Md(e, t) {
+function Pd(e, t) {
 	e.querySelector("a[data-ech-action=\"configureProperties\"]")?.addEventListener("click", (e) => {
-		e.preventDefault(), sd(t);
+		e.preventDefault(), ld(t);
 	});
 }
-function Nd(e, t) {
-	return Pd(e) || ((e) => {
-		sd(e ?? t);
+function Fd(e, t) {
+	return Id(e) || ((e) => {
+		ld(e ?? t);
 	});
 }
-function Pd(e) {
+function Id(e) {
 	if (typeof e != "object" || !e) return;
 	let t = e.constructor?.DEFAULT_OPTIONS?.actions?.configureProperties;
 	if (typeof t == "function") return (e) => {
@@ -4920,7 +4935,7 @@ function Pd(e) {
 }
 //#endregion
 //#region src/module/wfrp4e/wounding-properties/sheet.ts
-function Fd(t) {
+function Ld(t) {
 	if (!(t instanceof HTMLElement)) {
 		r(`${e} | ItemProperties render hook skipped: element is not HTMLElement`, { elementType: typeof t });
 		return;
@@ -4930,14 +4945,14 @@ function Fd(t) {
 		r(`${e} | ItemProperties render hook skipped: quality column not found.`);
 		return;
 	}
-	let i = Ld(n);
+	let i = zd(n);
 	if (i.length === 0) {
 		r(`${e} | ItemProperties render hook found no damage type rows`, { checkboxCount: n.querySelectorAll("input[type=\"checkbox\"]").length });
 		return;
 	}
 	r(`${e} | Grouping ItemProperties damage type rows`, { woundingRowCount: i.length });
-	let a = n.querySelector(`.${Hu}`), o = a ?? document.createElement("div");
-	a || (o.classList.add(Hu), o.append(Rd()));
+	let a = n.querySelector(`.${Wu}`), o = a ?? document.createElement("div");
+	a || (o.classList.add(Wu), o.append(Bd()));
 	for (let e of i) o.append(e);
 	let s = n.querySelector("input[name=\"custom-quality\"]")?.parentElement;
 	if (s) {
@@ -4946,88 +4961,88 @@ function Fd(t) {
 	}
 	n.append(o);
 }
-function Id(t, n) {
+function Rd(t, n) {
 	if (!(n instanceof HTMLElement)) {
 		r(`${e} | Item sheet render hook skipped: element is not HTMLElement`, {
-			applicationName: kd(t),
+			applicationName: jd(t),
 			elementType: typeof n
 		});
 		return;
 	}
-	let i = Ju(t), a = i?.document ?? i?.item;
-	if (!Gu(a)) {
+	let i = Xu(t), a = i?.document ?? i?.item;
+	if (!qu(a)) {
 		r(`${e} | Item sheet render hook skipped: unsupported document`, {
-			applicationName: kd(t),
-			document: Ad(a)
+			applicationName: jd(t),
+			document: Md(a)
 		});
 		return;
 	}
 	r(`${e} | Item sheet render hook inspecting supported document`, {
-		applicationName: kd(t),
-		document: Ad(a)
+		applicationName: jd(t),
+		document: Md(a)
 	});
-	let o = Bd(n);
+	let o = Hd(n);
 	if (!o) {
-		r(`${e} | Item sheet qualities box not found; trying standalone damage row`, { document: Ad(a) }), zd(t, n, a);
+		r(`${e} | Item sheet qualities box not found; trying standalone damage row`, { document: Md(a) }), Vd(t, n, a);
 		return;
 	}
 	let s = o.querySelector(".field input");
 	if (!s) {
-		r(`${e} | Item sheet qualities input not found`, { document: Ad(a) });
+		r(`${e} | Item sheet qualities input not found`, { document: Md(a) });
 		return;
 	}
-	let c = Vd(s.value);
+	let c = Ud(s.value);
 	if (c.wounding.length === 0) {
 		r(`${e} | Item sheet qualities contain no damage type labels`, {
-			document: Ad(a),
+			document: Md(a),
 			displayedQualities: s.value
 		});
 		return;
 	}
 	r(`${e} | Splitting item sheet damage type labels into their own row`, {
-		document: Ad(a),
+		document: Md(a),
 		normalQualities: c.normal,
 		woundingQualities: c.wounding
-	}), s.value = c.normal.join(","), o.parentElement?.querySelector(`.${Hu}__sheet-row`)?.remove(), o.after(jd(t, c.wounding, a));
+	}), s.value = c.normal.join(","), o.parentElement?.querySelector(`.${Wu}__sheet-row`)?.remove(), o.after(Nd(t, c.wounding, a));
 }
-function Ld(e) {
+function zd(e) {
 	let t = e.querySelectorAll("input[type=\"checkbox\"]"), n = [];
 	for (let e of t) {
-		if (!Uu.has(e.name)) continue;
+		if (!Gu.has(e.name)) continue;
 		let t = e.closest(".form-group");
 		t && n.push(t);
 	}
 	return n;
 }
-function Rd() {
+function Bd() {
 	let e = document.createElement("h2");
-	return e.classList.add("property-header", `${Hu}__header`), e.textContent = "Damage Type", e;
+	return e.classList.add("property-header", `${Wu}__header`), e.textContent = "Damage Type", e;
 }
-function zd(t, n, i) {
-	if (!Ku(i)) {
-		r(`${e} | Standalone damage type row skipped: unsupported document`, { document: Ad(i) });
+function Vd(t, n, i) {
+	if (!Ju(i)) {
+		r(`${e} | Standalone damage type row skipped: unsupported document`, { document: Md(i) });
 		return;
 	}
 	if (n.querySelector(".ech-wounding-properties__sheet-row")) {
-		r(`${e} | Standalone damage type row skipped: row already exists`, { document: Ad(i) });
+		r(`${e} | Standalone damage type row skipped: row already exists`, { document: Md(i) });
 		return;
 	}
-	let a = Hd(n);
+	let a = Wd(n);
 	if (!a) {
-		r(`${e} | Standalone damage type row skipped: damage fieldset not found`, { document: Ad(i) });
+		r(`${e} | Standalone damage type row skipped: damage fieldset not found`, { document: Md(i) });
 		return;
 	}
-	let o = qu(i);
+	let o = Yu(i);
 	r(`${e} | Appending standalone damage type row`, {
-		document: Ad(i),
+		document: Md(i),
 		labels: o
-	}), a.after(jd(t, o, i));
+	}), a.after(Nd(t, o, i));
 }
-function Bd(e) {
+function Hd(e) {
 	let t = e.querySelectorAll("a[data-action=\"configureProperties\"]");
 	for (let e of t) if (e.textContent.trim().startsWith("Qualities")) return e.closest(".attribute-box") ?? void 0;
 }
-function Vd(e) {
+function Ud(e) {
 	let t = [], n = [], r = new Set(Object.values(b));
 	for (let i of e.split(",")) {
 		let e = i.trim();
@@ -5044,88 +5059,88 @@ function Vd(e) {
 		wounding: n
 	};
 }
-function Hd(e) {
+function Wd(e) {
 	let t = e.querySelectorAll("fieldset");
 	for (let e of t) if (e.querySelector("legend")?.textContent.trim() === "Damage") return e;
 }
 //#endregion
 //#region src/module/wfrp4e/wounding-properties/display.ts
-var Ud = !1, Wd = Symbol.for(`${e}.woundingPropertiesContextPatched`);
-function Gd() {
-	if (id(), Jd(), Ud) {
+var Gd = !1, Kd = Symbol.for(`${e}.woundingPropertiesContextPatched`);
+function qd() {
+	if (od(), Xd(), Gd) {
 		r(`${e} | Wounding property display hooks already installed.`);
 		return;
 	}
 	Hooks.on("renderItemProperties", (e, t) => {
-		Fd(t);
+		Ld(t);
 	}), Hooks.on("renderApplicationV2", (e, t) => {
-		Id(e, t), hd(e, t), qd(e) && Kd(e);
+		Rd(e, t), _d(e, t), Yd(e) && Jd(e);
 	}), Hooks.on("renderBaseWFRP4eActorSheet", (e, t) => {
-		hd(e, t), Kd(e);
-	}), Ud = !0, r(`${e} | Wounding property display hooks installed.`);
+		_d(e, t), Jd(e);
+	}), Gd = !0, r(`${e} | Wounding property display hooks installed.`);
 }
-function Kd(t, n = 5) {
+function Jd(t, n = 5) {
 	typeof t != "object" || !t || requestAnimationFrame(() => {
 		let i = t.element;
 		if (i instanceof HTMLElement && i.isConnected) {
-			r(`${e} | Styling committed WFRP actor sheet with ${i.querySelectorAll(".item-property-row").length} property rows.`), hd(t, i);
+			r(`${e} | Styling committed WFRP actor sheet with ${i.querySelectorAll(".item-property-row").length} property rows.`), _d(t, i);
 			return;
 		}
 		if (n > 1) {
-			Kd(t, n - 1);
+			Jd(t, n - 1);
 			return;
 		}
 		r(`${e} | Committed WFRP actor sheet element was unavailable.`);
 	});
 }
-function qd(e) {
+function Yd(e) {
 	if (typeof e != "object" || !e) return !1;
 	let t = e.actor;
 	return typeof t == "object" && !!t;
 }
-function Jd() {
-	let t = Yd()?.prototype, n = t?._prepareContext;
+function Xd() {
+	let t = Zd()?.prototype, n = t?._prepareContext;
 	if (!t || !n) {
 		r(`${e} | ItemProperties context patch skipped: application unavailable.`);
 		return;
 	}
-	if (Xd(n)) {
+	if (Qd(n)) {
 		r(`${e} | ItemProperties context patch already installed.`);
 		return;
 	}
 	let i = async function(...e) {
 		let t = this.document;
-		Gu(t) && (this.qualities = Wu(this.qualities ?? {}));
+		qu(t) && (this.qualities = Ku(this.qualities ?? {}));
 		let r = await n.apply(this, e);
-		return Zd(this, r), r;
+		return $d(this, r), r;
 	};
-	Object.defineProperty(i, Wd, { value: !0 }), t._prepareContext = i, r(`${e} | ItemProperties context patch installed.`);
+	Object.defineProperty(i, Kd, { value: !0 }), t._prepareContext = i, r(`${e} | ItemProperties context patch installed.`);
 }
-function Yd() {
+function Zd() {
 	let e = game.wfrp4e?.apps?.ItemProperties;
 	return typeof e == "function" ? e : void 0;
 }
-function Xd(e) {
-	return !!e[Wd];
+function Qd(e) {
+	return !!e[Kd];
 }
-function Zd(t, n) {
-	let i = Ju(t), a = Yu(n), o = i?.document;
-	if (!i || !a || !Gu(o)) {
+function $d(t, n) {
+	let i = Xu(t), a = Zu(n), o = i?.document;
+	if (!i || !a || !qu(o)) {
 		r(`${e} | Skipping ItemProperties damage type context append`, {
-			applicationName: Qd(t),
+			applicationName: ef(t),
 			hasItemProperties: !!i,
 			hasRenderContext: !!a,
-			document: $d(o),
-			supportsDamageTypeProperties: Gu(o)
+			document: tf(o),
+			supportsDamageTypeProperties: qu(o)
 		});
 		return;
 	}
 	r(`${e} | Appending damage types to ItemProperties context`, {
-		applicationName: Qd(t),
-		document: $d(o),
+		applicationName: ef(t),
+		document: tf(o),
 		originalQualityCount: Object.keys(i.qualities ?? {}).length,
 		renderedQualityCount: a.qualities?.length ?? 0
-	}), i.qualities = Wu(i.qualities ?? {}), a.qualities ??= [];
+	}), i.qualities = Ku(i.qualities ?? {}), a.qualities ??= [];
 	for (let e of _) {
 		let t = y[e];
 		a.qualities.some((e) => e.key === t) || a.qualities.push({
@@ -5136,14 +5151,14 @@ function Zd(t, n) {
 		});
 	}
 	r(`${e} | ItemProperties context after damage type append`, {
-		document: $d(o),
+		document: tf(o),
 		renderedQualityCount: a.qualities.length
 	});
 }
-function Qd(e) {
+function ef(e) {
 	if (!(typeof e != "object" || !e)) return e.constructor?.name;
 }
-function $d(e) {
+function tf(e) {
 	if (typeof e != "object" || !e) return;
 	let t = e;
 	return {
@@ -5155,8 +5170,8 @@ function $d(e) {
 }
 //#endregion
 //#region src/module/wfrp4e/damage-qualities.ts
-var ef = !1;
-function tf() {
+var nf = !1;
+function rf() {
 	let t = game.wfrp4e?.config;
 	if (!t) {
 		r(`${e} | Damage quality registration skipped: WFRP config unavailable.`);
@@ -5177,13 +5192,13 @@ function tf() {
 	r(`${e} | Damage qualities registered`, {
 		count: _.length,
 		qualityKeys: _.map((e) => y[e])
-	}), nf(), Gd();
+	}), af(), qd();
 }
-function nf() {
+function af() {
 	let t = game.wfrp4e?.utility, n = t?.qualityList;
-	if (ef || !t || !n) {
+	if (nf || !t || !n) {
 		r(`${e} | Quality list patch skipped`, {
-			qualityListPatchInstalled: ef,
+			qualityListPatchInstalled: nf,
 			hasUtility: !!t,
 			hasOriginalQualityList: !!n
 		});
@@ -5191,47 +5206,47 @@ function nf() {
 	}
 	t.qualityList = function(e) {
 		let t = n.call(this, e);
-		return e === "armor" ? t : Wu(t);
-	}, ef = !0, r(`${e} | Quality list patch installed.`);
+		return e === "armor" ? t : Ku(t);
+	}, nf = !0, r(`${e} | Quality list patch installed.`);
 }
 //#endregion
 //#region src/module/wfrp4e/zero-wound-critical-links.ts
-var rf = "data-ech-source-item-uuid", af = "data-ech-critical-location", of = !1;
-function sf() {
-	of ||= (cf(), document.addEventListener("click", ff, !0), !0);
+var of = "data-ech-source-item-uuid", sf = "data-ech-critical-location", cf = !1;
+function lf() {
+	cf ||= (uf(), document.addEventListener("click", mf, !0), !0);
 }
-function cf() {
+function uf() {
 	let e = CONFIG.Actor?.documentClass?.prototype, t = e?.applyDamage;
 	typeof t != "function" || !e || (e.applyDamage = async function(e, n = {}) {
-		let r = await t.call(this, e, n), i = lf(n);
-		return typeof r != "string" || !i || !r.includes("critical-roll") ? r : df(r, i, uf(n));
+		let r = await t.call(this, e, n), i = df(n);
+		return typeof r != "string" || !i || !r.includes("critical-roll") ? r : pf(r, i, ff(n));
 	});
 }
-function lf(e) {
+function df(e) {
 	let t = $($(e.sourceTest)?.item), n = $($($(e.opposedTest)?.attackerTest)?.item), r = $(e.sourceItem), i = t?.uuid ?? n?.uuid ?? r?.uuid;
 	return typeof i == "string" ? i : void 0;
 }
-function uf(e) {
+function ff(e) {
 	let t = $($(e.opposedTest)?.result)?.hitloc, n = $(t)?.value, r = e.loc, i;
 	return typeof n == "string" ? i = n : typeof r == "string" && (i = r), i && Pl(i) ? i : void 0;
 }
-function df(e, t, n) {
-	let r = [`${rf}="${_f(t)}"`, n ? `${af}="${_f(n)}"` : void 0].filter(Boolean).join(" ");
+function pf(e, t, n) {
+	let r = [`${of}="${yf(t)}"`, n ? `${sf}="${yf(n)}"` : void 0].filter(Boolean).join(" ");
 	return e.replaceAll(/<a\b(?![^>]*\bdata-ech-source-item-uuid=)(?=[^>]*\bcritical-roll\b)/g, `<a ${r}`);
 }
-function ff(e) {
+function mf(e) {
 	let t = e.target;
 	if (!(t instanceof Element) || !Kl()) return;
-	let n = t.closest(`[data-action="clickTable"][${rf}]`);
-	!(n instanceof HTMLElement) || !gf(n.dataset.table) || (e.preventDefault(), e.stopPropagation(), e.stopImmediatePropagation(), pf(n).catch((e) => {
-		mf("Drowsy's WFRP4e Expanded Damage System could not roll an annotated zero-wound critical. See the browser console for details.", e);
+	let n = t.closest(`[data-action="clickTable"][${of}]`);
+	!(n instanceof HTMLElement) || !vf(n.dataset.table) || (e.preventDefault(), e.stopPropagation(), e.stopImmediatePropagation(), hf(n).catch((e) => {
+		gf("Drowsy's WFRP4e Expanded Damage System could not roll an annotated zero-wound critical. See the browser console for details.", e);
 	}));
 }
-async function pf(e) {
+async function hf(e) {
 	let t = e.dataset.table, n = game.wfrp4e?.tables?.formatChatRoll;
 	if (!t || typeof n != "function") return;
 	let r = e.closest("[data-message-id]")?.dataset.messageId, i = Number.parseInt(e.dataset.modifier ?? "0", 10) || 0, a = await n(t, {
-		criticalLocation: e.dataset.echCriticalLocation ?? hf(r),
+		criticalLocation: e.dataset.echCriticalLocation ?? _f(r),
 		messageId: r,
 		modifier: i,
 		showRoll: !0,
@@ -5241,18 +5256,18 @@ async function pf(e) {
 	let o = game.wfrp4e?.utility?.chatDataSetup, s = typeof o == "function" ? o("", game.settings.get("core", "rollMode"), !0) : { content: "" };
 	s.content = a, await ChatMessage.create(s);
 }
-function mf(t, n) {
+function gf(t, n) {
 	o(`${e} | ${t}`, n), ui.notifications?.error(t);
 }
-function hf(e) {
+function _f(e) {
 	if (!e) return;
 	let t = $($($(game.messages.get(e)?.system)?.test)?.result)?.hitloc, n = $(t)?.result;
 	return typeof n == "string" ? n : void 0;
 }
-function gf(e) {
+function vf(e) {
 	return typeof e == "string" && /^crit(?:head|body|arm|leg|larm|rarm|lleg|rleg)$/i.test(e);
 }
-function _f(e) {
+function yf(e) {
 	return e.replaceAll("&", "&amp;").replaceAll("\"", "&quot;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 }
 function $(e) {
@@ -5260,18 +5275,18 @@ function $(e) {
 }
 //#endregion
 //#region src/module/hooks/register-module-hooks.ts
-function vf() {
+function bf() {
 	Hooks.once("init", () => {
 		i(`${e} | Initializing`), Gl(), r(`${e} | init hook running`, {
 			foundryVersion: game.version,
 			systemId: game.system?.id,
 			userIsGM: game.user?.isGM
-		}), Gd(), bl(), tf();
+		}), qd(), bl(), rf();
 	}), Hooks.once("ready", () => {
-		yf();
+		xf();
 	});
 }
-async function yf() {
+async function xf() {
 	if (r(`${e} | ready hook running`, {
 		foundryVersion: game.version,
 		systemId: game.system?.id,
@@ -5283,11 +5298,11 @@ async function yf() {
 		a(`${e} | Loaded outside ${t}; skipping WFRP integration.`);
 		return;
 	}
-	gu(), await Jl(), r(`${e} | ready hook after mapping normalization`, { settings: tu() }), tf(), await d(), su(), Fu(), sf(), i(`${e} | Ready`);
+	gu(), await Jl(), r(`${e} | ready hook after mapping normalization`, { settings: tu() }), rf(), await d(), su(), Lu(), lf(), i(`${e} | Ready`);
 }
 //#endregion
 //#region src/main.ts
-vf();
+bf();
 //#endregion
 
 //# sourceMappingURL=wfrp4e-expanded-critical-hits.mjs.map

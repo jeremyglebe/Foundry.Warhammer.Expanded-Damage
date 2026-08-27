@@ -1,0 +1,5 @@
+2026/08/26-20:52:45.759772 16fa93000 Delete type=3 #1
+2026/08/26-20:52:45.766989 16fb1f000 Level-0 table #5: started
+2026/08/26-20:52:45.771362 16fb1f000 Level-0 table #5: 660883 bytes OK
+2026/08/26-20:52:45.771527 16fb1f000 Delete type=0 #3
+2026/08/26-20:52:45.771671 16fb1f000 Manual compaction at level-0 from '!folders!FcritJournals001' @ 72057594037927935 : 1 .. '!journal.pages!ffd8c4cb59e0906f.IzYwi6DHSIFP2yWS' @ 0 : 0; will stop at (end)
