@@ -1,3 +1,5 @@
-2026/08/28-10:22:16.665955 1730e3000 Recovering log #4
-2026/08/28-10:22:16.666312 1730e3000 Delete type=0 #4
-2026/08/28-10:22:16.666338 1730e3000 Delete type=3 #2
+2026/08/28-13:03:01.216569 1734bb000 Delete type=3 #1
+2026/08/28-13:03:01.224498 17455f000 Level-0 table #5: started
+2026/08/28-13:03:01.229422 17455f000 Level-0 table #5: 750901 bytes OK
+2026/08/28-13:03:01.229553 17455f000 Delete type=0 #3
+2026/08/28-13:03:01.229651 17455f000 Manual compaction at level-0 from '!folders!FcritJournals001' @ 72057594037927935 : 1 .. '!journal.pages!ffd8c4cb59e0906f.IzYwi6DHSIFP2yWS' @ 0 : 0; will stop at (end)
