@@ -4685,184 +4685,231 @@ function Vu(e) {
 	return zu[e][0]?.value ?? "body";
 }
 //#endregion
+//#region src/state/critical-review/notes.ts
+function Hu(e) {
+	let t = /* @__PURE__ */ z(!1), n = /* @__PURE__ */ z(!1), r = /* @__PURE__ */ z("saved"), i = /* @__PURE__ */ z({}), a = !1, o = Promise.resolve(), s, c = Xo(() => i.value[e.selectedId.value] ?? ""), l = Xo(() => Object.values(i.value).filter((e) => e.trim()).length);
+	function u(e) {
+		i.value = e;
+	}
+	function d(t) {
+		e.selectedId.value && (i.value[e.selectedId.value] = t, a = !0, r.value = "unsaved", f());
+	}
+	function f() {
+		s && clearTimeout(s), s = setTimeout(() => void p(), 650);
+	}
+	async function p() {
+		if (!(!e.getRuntime() || !a)) {
+			s && clearTimeout(s), s = void 0, a = !1, r.value = "saving";
+			try {
+				await h({ ...i.value }), r.value = a ? "unsaved" : "saved", a && f();
+			} catch (t) {
+				a = !0, r.value = "error", e.errorMessage.value = Uu(t);
+			}
+		}
+	}
+	async function m() {
+		let n = e.getRuntime();
+		if (!(!n || t.value || l.value === 0)) {
+			t.value = !0, e.errorMessage.value = "", e.statusMessage.value = "";
+			try {
+				if (!await n.confirmClearNotes(l.value)) return;
+				s && clearTimeout(s), s = void 0, a = !1, r.value = "saving", await h({}), i.value = {}, r.value = "saved", e.statusMessage.value = "All review notes cleared.";
+			} catch (t) {
+				r.value = "error", e.errorMessage.value = Uu(t);
+			} finally {
+				t.value = !1;
+			}
+		}
+	}
+	async function h(t) {
+		let n = e.getRuntime();
+		if (!n) return;
+		let r = o.then(() => n.saveNotes(t));
+		o = r.catch(() => void 0), await r;
+	}
+	async function g() {
+		await y(c.value, "Note copied.");
+	}
+	async function _() {
+		let t = e.getRuntime();
+		if (!t || n.value) return;
+		let r = e.entries.value.filter((e) => i.value[e.id]?.trim());
+		if (!r.length) {
+			e.statusMessage.value = "There are no review notes to copy.";
+			return;
+		}
+		n.value = !0, e.errorMessage.value = "", e.statusMessage.value = "Compiling all review notes…";
+		try {
+			await y(Ou(await Promise.all(r.map(async (e) => ({
+				detail: await t.loadDetail(e.id),
+				note: i.value[e.id] ?? ""
+			})))), "All review notes copied.");
+		} catch (t) {
+			e.errorMessage.value = Uu(t);
+		} finally {
+			n.value = !1;
+		}
+	}
+	async function v() {
+		e.selectedDetail.value && await y(Du(e.selectedDetail.value, c.value), "Current Critical review copied.");
+	}
+	async function y(t, n) {
+		let r = e.getRuntime();
+		if (r) try {
+			await r.copyText(t), e.statusMessage.value = n;
+		} catch (t) {
+			e.errorMessage.value = Uu(t);
+		}
+	}
+	return {
+		clearAllNotes: m,
+		copyCurrentReview: v,
+		copyNote: g,
+		copyReviewPacket: _,
+		currentNote: c,
+		flushNotes: p,
+		isClearingNotes: t,
+		isCopyingPacket: n,
+		loadNotes: u,
+		noteCount: l,
+		noteSaveState: r,
+		setCurrentNote: d
+	};
+}
+function Uu(e) {
+	return e instanceof Error ? e.message : String(e);
+}
+//#endregion
 //#region src/state/critical-review/index.ts
-var Hu = Fc("criticalReview", () => {
-	let e = /* @__PURE__ */ z([]), t = /* @__PURE__ */ z(""), n = /* @__PURE__ */ z(!1), r = /* @__PURE__ */ z(!1), i = /* @__PURE__ */ z(!1), a = /* @__PURE__ */ z(!1), o = /* @__PURE__ */ z("saved"), s = /* @__PURE__ */ z({}), c = /* @__PURE__ */ z(""), l = /* @__PURE__ */ z("body"), u = /* @__PURE__ */ z(), d = /* @__PURE__ */ z(""), f = /* @__PURE__ */ z(""), p = /* @__PURE__ */ z(), m = 0, h = !1, g, _, v = Xo(() => Au(e.value, "")), y = Xo(() => e.value.findIndex((e) => e.id === d.value)), b = Xo(() => s.value[d.value] ?? ""), ee = Xo(() => u.value ? Bu(u.value.location) : []), x = Xo(() => y.value > 0), te = Xo(() => y.value >= 0 && y.value < e.value.length - 1);
-	async function S(n) {
-		g = n, r.value = !0, t.value = "";
+var Wu = Fc("criticalReview", () => {
+	let e = /* @__PURE__ */ z([]), t = /* @__PURE__ */ z(""), n = /* @__PURE__ */ z(!1), r = /* @__PURE__ */ z(!1), i = /* @__PURE__ */ z(!1), a = /* @__PURE__ */ z(""), o = /* @__PURE__ */ z("body"), s = /* @__PURE__ */ z(), c = /* @__PURE__ */ z(""), l = /* @__PURE__ */ z(""), u = /* @__PURE__ */ z(), d = 0, f, { loadNotes: p, ...m } = Hu({
+		entries: e,
+		errorMessage: t,
+		getRuntime: () => f,
+		selectedDetail: s,
+		selectedId: c,
+		statusMessage: l
+	}), h = Xo(() => Au(e.value, "")), g = Xo(() => e.value.findIndex((e) => e.id === c.value)), _ = Xo(() => s.value ? Bu(s.value.location) : []), v = Xo(() => g.value > 0), y = Xo(() => g.value >= 0 && g.value < e.value.length - 1);
+	async function b(n) {
+		f = n, r.value = !0, t.value = "";
 		try {
 			let [t, n, r] = await Promise.all([
-				g.loadIndex(),
-				Promise.resolve(g.loadNotes()),
-				Promise.resolve(g.getTestActor())
+				f.loadIndex(),
+				Promise.resolve(f.loadNotes()),
+				Promise.resolve(f.getTestActor())
 			]);
-			e.value = ju(t), s.value = n, p.value = r;
+			e.value = ju(t), p(n), u.value = r;
 			let i = e.value[0];
-			i && await ne(i.id);
+			i && await ee(i.id);
 		} catch (e) {
-			t.value = Uu(e);
+			t.value = Gu(e);
 		} finally {
 			r.value = !1;
 		}
 	}
-	async function ne(e) {
-		if (!g || e === d.value && u.value) return;
-		let n = ++m;
-		d.value = e, u.value = void 0, i.value = !0, t.value = "", f.value = "";
+	async function ee(e) {
+		if (!f || e === c.value && s.value) return;
+		let n = ++d;
+		c.value = e, s.value = void 0, i.value = !0, t.value = "", l.value = "";
 		try {
-			let t = await g.loadDetail(e);
-			if (n !== m) return;
-			u.value = t, l.value = Vu(t.location);
+			let t = await f.loadDetail(e);
+			if (n !== d) return;
+			s.value = t, o.value = Vu(t.location);
 		} catch (e) {
-			n === m && (t.value = Uu(e));
+			n === d && (t.value = Gu(e));
 		} finally {
-			n === m && (i.value = !1);
+			n === d && (i.value = !1);
 		}
+	}
+	async function x() {
+		let t = e.value[g.value - 1];
+		t && await ee(t.id);
+	}
+	async function te() {
+		let t = e.value[g.value + 1];
+		t && await ee(t.id);
+	}
+	async function S() {
+		await ae(async () => f?.createTestActor(), "Test Actor is ready.");
+	}
+	async function ne() {
+		await ae(async () => f?.resetTestActor(), "Test Actor reset to base state.");
 	}
 	async function re() {
-		let t = e.value[y.value - 1];
-		t && await ne(t.id);
+		let e = s.value;
+		!f || !e || !u.value || await ae(() => f?.applyCritical(e.id, o.value), `${e.name} applied to the Test Actor.`);
 	}
-	async function ie() {
-		let t = e.value[y.value + 1];
-		t && await ne(t.id);
-	}
-	function ae(e) {
-		d.value && (s.value[d.value] = e, h = !0, o.value = "unsaved", oe());
-	}
-	function oe() {
-		_ && clearTimeout(_), _ = setTimeout(() => void se(), 650);
-	}
-	async function se() {
-		if (!(!g || !h)) {
-			_ && clearTimeout(_), _ = void 0, h = !1, o.value = "saving";
-			try {
-				await g.saveNotes({ ...s.value }), o.value = h ? "unsaved" : "saved", h && oe();
-			} catch (e) {
-				h = !0, o.value = "error", t.value = Uu(e);
-			}
-		}
-	}
-	async function C() {
-		await he(async () => g?.createTestActor(), "Test Actor is ready.");
-	}
-	async function ce() {
-		await he(async () => g?.resetTestActor(), "Test Actor reset to base state.");
-	}
-	async function le() {
-		let e = u.value;
-		!g || !e || !p.value || await he(() => g?.applyCritical(e.id, l.value), `${e.name} applied to the Test Actor.`);
-	}
-	function ue() {
+	function ie() {
 		try {
-			g?.openTestActor();
+			f?.openTestActor();
 		} catch (e) {
-			t.value = Uu(e);
+			t.value = Gu(e);
 		}
 	}
-	async function de() {
-		await me(b.value, "Note copied.");
-	}
-	async function fe() {
-		if (!g || a.value) return;
-		let n = e.value.filter((e) => s.value[e.id]?.trim());
-		if (!n.length) {
-			f.value = "There are no review notes to copy.";
-			return;
-		}
-		a.value = !0, t.value = "", f.value = "Compiling all review notes…";
-		try {
-			await me(Ou(await Promise.all(n.map(async (e) => ({
-				detail: await g.loadDetail(e.id),
-				note: s.value[e.id] ?? ""
-			})))), "All review notes copied.");
-		} catch (e) {
-			t.value = Uu(e);
-		} finally {
-			a.value = !1;
-		}
-	}
-	async function pe() {
-		u.value && await me(Du(u.value, b.value), "Current Critical review copied.");
-	}
-	async function me(e, n) {
-		if (g) try {
-			await g.copyText(e), f.value = n;
-		} catch (e) {
-			t.value = Uu(e);
-		}
-	}
-	async function he(e, r) {
+	async function ae(e, r) {
 		if (!n.value) {
-			n.value = !0, t.value = "", f.value = "";
+			n.value = !0, t.value = "", l.value = "";
 			try {
 				let t = await e();
-				t && (p.value = t), f.value = r;
+				t && (u.value = t), l.value = r;
 			} catch (e) {
-				t.value = Uu(e);
+				t.value = Gu(e);
 			} finally {
 				n.value = !1;
 			}
 		}
 	}
 	return {
-		applyCritical: le,
-		canGoNext: te,
-		canGoPrevious: x,
-		copyNote: de,
-		copyCurrentReview: pe,
-		copyReviewPacket: fe,
-		createTestActor: C,
-		currentNote: b,
-		directory: v,
+		...m,
+		applyCritical: re,
+		canGoNext: y,
+		canGoPrevious: v,
+		createTestActor: S,
+		directory: h,
 		entries: e,
 		errorMessage: t,
-		flushNotes: se,
-		goNext: ie,
-		goPrevious: re,
-		initialize: S,
+		goNext: te,
+		goPrevious: x,
+		initialize: b,
 		isActing: n,
-		isCopyingPacket: a,
 		isLoadingCatalog: r,
 		isLoadingDetail: i,
-		locationOptions: ee,
-		noteSaveState: o,
-		openTestActor: ue,
-		query: c,
-		resetTestActor: ce,
-		selectEntry: ne,
-		selectedActorLocation: l,
-		selectedDetail: u,
-		selectedId: d,
-		selectedIndex: y,
-		setCurrentNote: ae,
-		statusMessage: f,
-		testActor: p
+		locationOptions: _,
+		openTestActor: ie,
+		query: a,
+		resetTestActor: ne,
+		selectEntry: ee,
+		selectedActorLocation: o,
+		selectedDetail: s,
+		selectedId: c,
+		selectedIndex: g,
+		statusMessage: l,
+		testActor: u
 	};
 });
-function Uu(e) {
+function Gu(e) {
 	return e instanceof Error ? e.message : String(e);
 }
 //#endregion
 //#region src/view/apps/critical-review/components/ActorReviewPanel.vue?vue&type=script&setup=true&lang.ts
-var Wu = { class: "tw:dui-card tw:dui-card-border tw:min-h-0 tw:overflow-hidden tw:bg-base-100" }, Gu = { class: "tw:dui-card-body tw:min-h-0 tw:gap-3 tw:overflow-y-auto tw:p-3" }, Ku = { class: "tw:flex tw:shrink-0 tw:items-center tw:justify-between tw:gap-2" }, qu = { class: "tw:dui-card-title tw:m-0 tw:text-base" }, Ju = {
+var Ku = { class: "tw:dui-card tw:dui-card-border tw:min-h-0 tw:overflow-hidden tw:bg-base-100" }, qu = { class: "tw:dui-card-body tw:min-h-0 tw:gap-3 tw:overflow-y-auto tw:p-3" }, Ju = { class: "tw:flex tw:shrink-0 tw:items-center tw:justify-between tw:gap-2" }, Yu = { class: "tw:dui-card-title tw:m-0 tw:text-base" }, Xu = {
 	key: 0,
 	class: "tw:dui-badge tw:dui-badge-sm"
-}, Yu = ["aria-label", "disabled"], Xu = ["src"], Zu = { class: "tw:min-w-0" }, Qu = { class: "tw:m-0 tw:truncate tw:text-sm tw:font-bold" }, $u = { class: "tw:m-0 tw:mt-1 tw:text-xs tw:opacity-65" }, ed = { class: "tw:flex tw:flex-col tw:gap-1 tw:text-xs" }, td = { class: "tw:opacity-70" }, nd = ["disabled"], rd = ["value"], id = ["disabled"], ad = { class: "tw:flex tw:flex-wrap tw:gap-2" }, od = ["disabled"], sd = ["disabled"], cd = { class: "tw:border-t tw:border-base-300 tw:pt-3" }, ld = { class: "tw:m-0 tw:text-xs tw:font-bold" }, ud = {
+}, Zu = ["aria-label", "disabled"], Qu = ["src"], $u = { class: "tw:min-w-0" }, ed = { class: "tw:m-0 tw:truncate tw:text-sm tw:font-bold" }, td = { class: "tw:m-0 tw:mt-1 tw:text-xs tw:opacity-65" }, nd = { class: "tw:flex tw:flex-col tw:gap-1 tw:text-xs" }, rd = { class: "tw:opacity-70" }, id = ["disabled"], ad = ["value"], od = ["disabled"], sd = { class: "tw:flex tw:flex-wrap tw:gap-2" }, cd = ["disabled"], ld = ["disabled"], ud = { class: "tw:border-t tw:border-base-300 tw:pt-3" }, dd = { class: "tw:m-0 tw:text-xs tw:font-bold" }, fd = {
 	key: 0,
 	class: "tw:m-0 tw:mt-2 tw:text-xs tw:opacity-65"
-}, dd = {
+}, pd = {
 	key: 1,
 	class: "tw:m-0 tw:mt-2 tw:space-y-1 tw:pl-5 tw:text-xs"
-}, fd = { class: "tw:m-0 tw:text-sm tw:opacity-70" }, pd = ["disabled"], md = /* @__PURE__ */ Ti({
+}, md = { class: "tw:m-0 tw:text-sm tw:opacity-70" }, hd = ["disabled"], gd = /* @__PURE__ */ Ti({
 	__name: "ActorReviewPanel",
 	props: { text: { type: Function } },
 	setup(e) {
-		let t = Hu();
-		return (n, r) => (q(), J("section", Wu, [Y("div", Gu, [Y("header", Ku, [Y("h2", qu, [r[6] ||= Y("i", {
+		let t = Wu();
+		return (n, r) => (q(), J("section", Ku, [Y("div", qu, [Y("header", Ju, [Y("h2", Yu, [r[6] ||= Y("i", {
 			class: "fa-solid fa-user-gear",
 			"aria-hidden": "true"
-		}, null, -1), Z(" " + M(e.text("actorPreview")), 1)]), B(t).testActor ? (q(), J("span", Ju, M(B(t).testActor.criticalCount) + " " + M(e.text("criticals")), 1)) : wo("", !0)]), B(t).testActor ? (q(), J(G, { key: 0 }, [
+		}, null, -1), Z(" " + M(e.text("actorPreview")), 1)]), B(t).testActor ? (q(), J("span", Xu, M(B(t).testActor.criticalCount) + " " + M(e.text("criticals")), 1)) : wo("", !0)]), B(t).testActor ? (q(), J(G, { key: 0 }, [
 			Y("button", {
 				type: "button",
 				class: "tw:flex tw:aspect-4/3 tw:w-full tw:shrink-0 tw:items-center tw:justify-center tw:overflow-hidden tw:rounded-box tw:border tw:border-base-300 tw:bg-base-200 tw:p-2",
@@ -4873,16 +4920,16 @@ var Wu = { class: "tw:dui-card tw:dui-card-border tw:min-h-0 tw:overflow-hidden 
 				src: B(t).testActor.img,
 				alt: "",
 				class: "tw:h-full tw:w-full tw:object-contain"
-			}, null, 8, Xu)], 8, Yu),
-			Y("div", Zu, [Y("h3", Qu, M(B(t).testActor.name), 1), Y("p", $u, M(B(t).testActor.criticalCount ? e.text("actorInjured") : e.text("actorReady")), 1)]),
-			Y("label", ed, [Y("span", td, M(e.text("testLocation")), 1), li(Y("select", {
+			}, null, 8, Qu)], 8, Zu),
+			Y("div", $u, [Y("h3", ed, M(B(t).testActor.name), 1), Y("p", td, M(B(t).testActor.criticalCount ? e.text("actorInjured") : e.text("actorReady")), 1)]),
+			Y("label", nd, [Y("span", rd, M(e.text("testLocation")), 1), li(Y("select", {
 				"onUpdate:modelValue": r[1] ||= (e) => B(t).selectedActorLocation = e,
 				class: "tw:dui-select tw:dui-select-sm tw:w-full",
 				disabled: B(t).locationOptions.length === 1
 			}, [(q(!0), J(G, null, H(B(t).locationOptions, (e) => (q(), J("option", {
 				key: e.value,
 				value: e.value
-			}, M(e.label), 9, rd))), 128))], 8, nd), [[Ws, B(t).selectedActorLocation]])]),
+			}, M(e.label), 9, ad))), 128))], 8, id), [[Ws, B(t).selectedActorLocation]])]),
 			Y("button", {
 				class: "tw:dui-btn tw:dui-btn-primary tw:dui-btn-sm tw:w-full",
 				type: "button",
@@ -4891,8 +4938,8 @@ var Wu = { class: "tw:dui-card tw:dui-card-border tw:min-h-0 tw:overflow-hidden 
 			}, [r[7] ||= Y("i", {
 				class: "fa-solid fa-burst",
 				"aria-hidden": "true"
-			}, null, -1), Z(" " + M(e.text("applyCurrentCritical")), 1)], 8, id),
-			Y("div", ad, [Y("button", {
+			}, null, -1), Z(" " + M(e.text("applyCurrentCritical")), 1)], 8, od),
+			Y("div", sd, [Y("button", {
 				class: "tw:dui-btn tw:dui-btn-sm",
 				type: "button",
 				disabled: B(t).isActing,
@@ -4900,7 +4947,7 @@ var Wu = { class: "tw:dui-card tw:dui-card-border tw:min-h-0 tw:overflow-hidden 
 			}, [r[8] ||= Y("i", {
 				class: "fa-solid fa-arrow-up-right-from-square",
 				"aria-hidden": "true"
-			}, null, -1), Z(" " + M(e.text("openActor")), 1)], 8, od), Y("button", {
+			}, null, -1), Z(" " + M(e.text("openActor")), 1)], 8, cd), Y("button", {
 				class: "tw:dui-btn tw:dui-btn-sm",
 				type: "button",
 				disabled: B(t).isActing,
@@ -4908,14 +4955,14 @@ var Wu = { class: "tw:dui-card tw:dui-card-border tw:min-h-0 tw:overflow-hidden 
 			}, [r[9] ||= Y("i", {
 				class: "fa-solid fa-rotate-left",
 				"aria-hidden": "true"
-			}, null, -1), Z(" " + M(e.text("resetActor")), 1)], 8, sd)]),
-			Y("div", cd, [Y("h3", ld, M(e.text("appliedCriticals")), 1), B(t).testActor.criticalNames.length ? (q(), J("ul", dd, [(q(!0), J(G, null, H(B(t).testActor.criticalNames, (e, t) => (q(), J("li", { key: `${e}:${t}` }, M(e), 1))), 128))])) : (q(), J("p", ud, M(e.text("noAppliedCriticals")), 1))])
+			}, null, -1), Z(" " + M(e.text("resetActor")), 1)], 8, ld)]),
+			Y("div", ud, [Y("h3", dd, M(e.text("appliedCriticals")), 1), B(t).testActor.criticalNames.length ? (q(), J("ul", pd, [(q(!0), J(G, null, H(B(t).testActor.criticalNames, (e, t) => (q(), J("li", { key: `${e}:${t}` }, M(e), 1))), 128))])) : (q(), J("p", fd, M(e.text("noAppliedCriticals")), 1))])
 		], 64)) : (q(), J(G, { key: 1 }, [
 			r[11] ||= Y("div", { class: "tw:flex tw:aspect-4/3 tw:w-full tw:shrink-0 tw:items-center tw:justify-center tw:rounded-box tw:border tw:border-dashed tw:border-base-300 tw:bg-base-200" }, [Y("i", {
 				class: "fa-solid fa-user-plus tw:text-4xl tw:opacity-35",
 				"aria-hidden": "true"
 			})], -1),
-			Y("p", fd, M(e.text("actorMissing")), 1),
+			Y("p", md, M(e.text("actorMissing")), 1),
 			Y("button", {
 				class: "tw:dui-btn tw:dui-btn-primary tw:dui-btn-sm tw:w-full",
 				type: "button",
@@ -4924,16 +4971,16 @@ var Wu = { class: "tw:dui-card tw:dui-card-border tw:min-h-0 tw:overflow-hidden 
 			}, [r[10] ||= Y("i", {
 				class: "fa-solid fa-user-plus",
 				"aria-hidden": "true"
-			}, null, -1), Z(" " + M(e.text("createActor")), 1)], 8, pd)
+			}, null, -1), Z(" " + M(e.text("createActor")), 1)], 8, hd)
 		], 64))])]));
 	}
-}), hd = { class: "ech-review-directory-pane tw:flex tw:min-h-0 tw:min-w-0 tw:flex-col tw:overflow-hidden tw:rounded-box tw:border tw:border-base-300 tw:bg-base-200" }, gd = { class: "tw:shrink-0 tw:border-b tw:border-base-300 tw:p-3" }, _d = { class: "tw:m-0 tw:flex tw:items-center tw:gap-2 tw:text-sm tw:font-bold" }, vd = { class: "tw:m-0 tw:mt-1 tw:text-xs tw:opacity-65" }, yd = ["aria-label"], bd = { class: "tw:dui-menu tw:dui-menu-xs tw:w-full tw:p-0" }, xd = ["open"], Sd = { class: "tw:font-semibold" }, Cd = { class: "tw:min-w-0 tw:flex-1 tw:truncate" }, wd = ["onClick"], Td = { class: "tw:min-w-0 tw:flex-1 tw:truncate tw:text-left" }, Ed = { class: "tw:dui-badge tw:dui-badge-sm" }, Dd = { class: "ech-review-names-pane tw:flex tw:min-h-0 tw:min-w-0 tw:flex-col tw:overflow-hidden tw:rounded-box tw:border tw:border-base-300 tw:bg-base-200" }, Od = { class: "tw:shrink-0 tw:border-b tw:border-base-300 tw:p-3" }, kd = { class: "tw:m-0 tw:truncate tw:text-sm tw:font-bold" }, Ad = { class: "tw:m-0 tw:mt-1 tw:truncate tw:text-xs tw:opacity-65" }, jd = { class: "tw:dui-input tw:dui-input-sm tw:mt-3 tw:flex tw:w-full tw:items-center tw:gap-2" }, Md = ["value", "placeholder"], Nd = ["aria-label"], Pd = {
+}), _d = { class: "ech-review-directory-pane tw:flex tw:min-h-0 tw:min-w-0 tw:flex-col tw:overflow-hidden tw:rounded-box tw:border tw:border-base-300 tw:bg-base-200" }, vd = { class: "tw:shrink-0 tw:border-b tw:border-base-300 tw:p-3" }, yd = { class: "tw:m-0 tw:flex tw:items-center tw:gap-2 tw:text-sm tw:font-bold" }, bd = { class: "tw:m-0 tw:mt-1 tw:text-xs tw:opacity-65" }, xd = ["aria-label"], Sd = { class: "tw:dui-menu tw:dui-menu-xs tw:w-full tw:p-0" }, Cd = ["open"], wd = { class: "tw:font-semibold" }, Td = { class: "tw:min-w-0 tw:flex-1 tw:truncate" }, Ed = ["onClick"], Dd = { class: "tw:min-w-0 tw:flex-1 tw:truncate tw:text-left" }, Od = { class: "tw:dui-badge tw:dui-badge-sm" }, kd = { class: "ech-review-names-pane tw:flex tw:min-h-0 tw:min-w-0 tw:flex-col tw:overflow-hidden tw:rounded-box tw:border tw:border-base-300 tw:bg-base-200" }, Ad = { class: "tw:shrink-0 tw:border-b tw:border-base-300 tw:p-3" }, jd = { class: "tw:m-0 tw:truncate tw:text-sm tw:font-bold" }, Md = { class: "tw:m-0 tw:mt-1 tw:truncate tw:text-xs tw:opacity-65" }, Nd = { class: "tw:dui-input tw:dui-input-sm tw:mt-3 tw:flex tw:w-full tw:items-center tw:gap-2" }, Pd = ["value", "placeholder"], Fd = ["aria-label"], Id = {
 	key: 0,
 	class: "tw:p-3 tw:text-sm tw:opacity-70"
-}, Fd = {
+}, Ld = {
 	key: 1,
 	class: "tw:dui-menu tw:dui-menu-xs tw:w-full tw:p-0"
-}, Id = ["onClick"], Ld = { class: "tw:w-5 tw:shrink-0 tw:text-right tw:font-mono tw:opacity-60" }, Rd = { class: "tw:min-w-0 tw:flex-1 tw:truncate tw:text-left" }, zd = /* @__PURE__ */ Ti({
+}, Rd = ["onClick"], zd = { class: "tw:w-5 tw:shrink-0 tw:text-right tw:font-mono tw:opacity-60" }, Bd = { class: "tw:min-w-0 tw:flex-1 tw:truncate tw:text-left" }, Vd = /* @__PURE__ */ Ti({
 	__name: "CriticalDirectory",
 	props: {
 		categories: {},
@@ -4963,16 +5010,16 @@ var Wu = { class: "tw:dui-card tw:dui-card-border tw:min-h-0 tw:overflow-hidden 
 		function l(e) {
 			return e.locations.some((t) => `${e.key}:${t.key}` === i.value);
 		}
-		return (t, n) => (q(), J(G, null, [Y("aside", hd, [Y("header", gd, [Y("h2", _d, [n[1] ||= Y("i", {
+		return (t, n) => (q(), J(G, null, [Y("aside", _d, [Y("header", vd, [Y("h2", yd, [n[1] ||= Y("i", {
 			class: "fa-solid fa-folder-tree",
 			"aria-hidden": "true"
-		}, null, -1), Z(" " + M(e.text("directory")), 1)]), Y("p", vd, M(e.totalCount) + " " + M(e.text("compiledCriticals")), 1)]), Y("nav", {
+		}, null, -1), Z(" " + M(e.text("directory")), 1)]), Y("p", bd, M(e.totalCount) + " " + M(e.text("compiledCriticals")), 1)]), Y("nav", {
 			class: "tw:min-h-0 tw:flex-1 tw:overflow-y-auto tw:p-2",
 			"aria-label": e.text("directory")
-		}, [Y("ul", bd, [(q(!0), J(G, null, H(e.categories, (e) => (q(), J("li", { key: e.key }, [Y("details", { open: l(e) }, [Y("summary", Sd, [n[2] ||= Y("i", {
+		}, [Y("ul", Sd, [(q(!0), J(G, null, H(e.categories, (e) => (q(), J("li", { key: e.key }, [Y("details", { open: l(e) }, [Y("summary", wd, [n[2] ||= Y("i", {
 			class: "fa-solid fa-folder",
 			"aria-hidden": "true"
-		}, null, -1), Y("span", Cd, M(e.label), 1)]), Y("ul", null, [(q(!0), J(G, null, H(e.locations, (t) => (q(), J("li", { key: t.key }, [Y("button", {
+		}, null, -1), Y("span", Td, M(e.label), 1)]), Y("ul", null, [(q(!0), J(G, null, H(e.locations, (t) => (q(), J("li", { key: t.key }, [Y("button", {
 			type: "button",
 			class: Kt(`${e.key}:${t.key}` === i.value ? "tw:dui-menu-active" : ""),
 			onClick: (n) => i.value = `${e.key}:${t.key}`
@@ -4981,12 +5028,12 @@ var Wu = { class: "tw:dui-card tw:dui-card-border tw:min-h-0 tw:overflow-hidden 
 				class: "fa-regular fa-file-lines",
 				"aria-hidden": "true"
 			}, null, -1),
-			Y("span", Td, M(t.label), 1),
-			Y("span", Ed, M(t.entries.length), 1)
-		], 10, wd)]))), 128))])], 8, xd)]))), 128))])], 8, yd)]), Y("aside", Dd, [Y("header", Od, [
-			Y("h2", kd, M(o.value?.categoryLabel ?? e.text("criticalNames")), 1),
-			Y("p", Ad, M(o.value?.label ?? e.text("criticalNames")) + " · " + M(o.value?.entries.length ?? 0), 1),
-			Y("label", jd, [n[4] ||= Y("i", {
+			Y("span", Dd, M(t.label), 1),
+			Y("span", Od, M(t.entries.length), 1)
+		], 10, Ed)]))), 128))])], 8, Cd)]))), 128))])], 8, xd)]), Y("aside", kd, [Y("header", Ad, [
+			Y("h2", jd, M(o.value?.categoryLabel ?? e.text("criticalNames")), 1),
+			Y("p", Md, M(o.value?.label ?? e.text("criticalNames")) + " · " + M(o.value?.entries.length ?? 0), 1),
+			Y("label", Nd, [n[4] ||= Y("i", {
 				class: "fa-solid fa-magnifying-glass tw:opacity-60",
 				"aria-hidden": "true"
 			}, null, -1), Y("input", {
@@ -4995,45 +5042,50 @@ var Wu = { class: "tw:dui-card tw:dui-card-border tw:min-h-0 tw:overflow-hidden 
 				class: "tw:min-w-0 tw:grow",
 				placeholder: e.text("findCritical"),
 				onInput: n[0] ||= (e) => r("query", e.target.value)
-			}, null, 40, Md)])
+			}, null, 40, Pd)])
 		]), Y("nav", {
 			class: "tw:min-h-0 tw:flex-1 tw:overflow-y-auto tw:p-2",
 			"aria-label": e.text("criticalNames")
-		}, [s.value.length ? (q(), J("ul", Fd, [(q(!0), J(G, null, H(s.value, (t) => (q(), J("li", { key: t.id }, [Y("button", {
+		}, [s.value.length ? (q(), J("ul", Ld, [(q(!0), J(G, null, H(s.value, (t) => (q(), J("li", { key: t.id }, [Y("button", {
 			type: "button",
 			class: Kt(t.id === e.selectedId ? "tw:dui-menu-active" : ""),
 			onClick: (e) => r("select", t.id)
 		}, [
-			Y("span", Ld, M(t.row + 1), 1),
+			Y("span", zd, M(t.row + 1), 1),
 			Y("span", {
 				class: Kt(["tw:h-2 tw:w-2 tw:shrink-0 tw:rounded-full", c(t.automationStatus)]),
 				"aria-hidden": "true"
 			}, null, 2),
-			Y("span", Rd, M(t.name), 1)
-		], 10, Id)]))), 128))])) : (q(), J("p", Pd, M(e.text("noMatches")), 1))], 8, Nd)])], 64));
+			Y("span", Bd, M(t.name), 1)
+		], 10, Rd)]))), 128))])) : (q(), J("p", Id, M(e.text("noMatches")), 1))], 8, Fd)])], 64));
 	}
-}), Bd = { class: "tw:dui-card tw:dui-card-border tw:min-h-0 tw:overflow-hidden tw:bg-base-100" }, Vd = { class: "tw:dui-card-body tw:min-h-0 tw:gap-3 tw:p-3" }, Hd = { class: "tw:flex tw:shrink-0 tw:items-center tw:justify-between tw:gap-2" }, Ud = { class: "tw:dui-card-title tw:m-0 tw:text-base" }, Wd = { class: "tw:text-xs tw:opacity-60" }, Gd = ["placeholder", "value"], Kd = { class: "tw:flex tw:shrink-0 tw:flex-wrap tw:gap-2" }, qd = ["disabled"], Jd = /* @__PURE__ */ Ti({
+}), Hd = { class: "tw:dui-card tw:dui-card-border tw:min-h-0 tw:overflow-hidden tw:bg-base-100" }, Ud = { class: "tw:dui-card-body tw:min-h-0 tw:gap-3 tw:p-3" }, Wd = { class: "tw:flex tw:shrink-0 tw:items-center tw:justify-between tw:gap-2" }, Gd = { class: "tw:dui-card-title tw:m-0 tw:text-base" }, Kd = { class: "tw:text-xs tw:opacity-60" }, qd = [
+	"disabled",
+	"placeholder",
+	"value"
+], Jd = { class: "tw:flex tw:shrink-0 tw:flex-wrap tw:gap-2" }, Yd = ["disabled"], Xd = ["disabled"], Zd = /* @__PURE__ */ Ti({
 	__name: "NotesPanel",
 	props: { text: { type: Function } },
 	setup(e) {
-		let t = Hu();
-		return (n, r) => (q(), J("section", Bd, [Y("div", Vd, [
-			Y("header", Hd, [Y("h2", Ud, [r[4] ||= Y("i", {
+		let t = Wu();
+		return (n, r) => (q(), J("section", Hd, [Y("div", Ud, [
+			Y("header", Wd, [Y("h2", Gd, [r[5] ||= Y("i", {
 				class: "fa-solid fa-note-sticky",
 				"aria-hidden": "true"
-			}, null, -1), Z(" " + M(e.text("notes")), 1)]), Y("span", Wd, M(e.text(`noteState.${B(t).noteSaveState}`)), 1)]),
+			}, null, -1), Z(" " + M(e.text("notes")), 1)]), Y("span", Kd, M(e.text(`noteState.${B(t).noteSaveState}`)), 1)]),
 			Y("textarea", {
 				class: "tw:dui-textarea tw:min-h-28 tw:min-w-0 tw:flex-1 tw:resize-none tw:font-sans",
+				disabled: B(t).isClearingNotes,
 				placeholder: e.text("notesPlaceholder"),
 				value: B(t).currentNote,
 				onInput: r[0] ||= (e) => B(t).setCurrentNote(e.target.value)
-			}, null, 40, Gd),
-			Y("div", Kd, [
+			}, null, 40, qd),
+			Y("div", Jd, [
 				Y("button", {
 					class: "tw:dui-btn tw:dui-btn-sm",
 					type: "button",
 					onClick: r[1] ||= (...e) => B(t).copyNote && B(t).copyNote(...e)
-				}, [r[5] ||= Y("i", {
+				}, [r[6] ||= Y("i", {
 					class: "fa-regular fa-copy",
 					"aria-hidden": "true"
 				}, null, -1), Z(" " + M(e.text("copyNote")), 1)]),
@@ -5041,7 +5093,7 @@ var Wu = { class: "tw:dui-card tw:dui-card-border tw:min-h-0 tw:overflow-hidden 
 					class: "tw:dui-btn tw:dui-btn-sm",
 					type: "button",
 					onClick: r[2] ||= (...e) => B(t).copyCurrentReview && B(t).copyCurrentReview(...e)
-				}, [r[6] ||= Y("i", {
+				}, [r[7] ||= Y("i", {
 					class: "fa-solid fa-file-arrow-down",
 					"aria-hidden": "true"
 				}, null, -1), Z(" " + M(e.text("copyCurrentReview")), 1)]),
@@ -5050,125 +5102,135 @@ var Wu = { class: "tw:dui-card tw:dui-card-border tw:min-h-0 tw:overflow-hidden 
 					type: "button",
 					disabled: B(t).isCopyingPacket,
 					onClick: r[3] ||= (...e) => B(t).copyReviewPacket && B(t).copyReviewPacket(...e)
-				}, [r[7] ||= Y("i", {
+				}, [r[8] ||= Y("i", {
 					class: "fa-solid fa-clipboard-list",
 					"aria-hidden": "true"
-				}, null, -1), Z(" " + M(e.text(B(t).isCopyingPacket ? "copyingPacket" : "copyPacket")), 1)], 8, qd)
+				}, null, -1), Z(" " + M(e.text(B(t).isCopyingPacket ? "copyingPacket" : "copyPacket")), 1)], 8, Yd),
+				Y("button", {
+					class: "tw:dui-btn tw:dui-btn-error tw:dui-btn-outline tw:dui-btn-sm",
+					type: "button",
+					disabled: B(t).noteCount === 0 || B(t).isClearingNotes,
+					onClick: r[4] ||= (...e) => B(t).clearAllNotes && B(t).clearAllNotes(...e)
+				}, [r[9] ||= Y("i", {
+					class: "fa-solid fa-trash-can",
+					"aria-hidden": "true"
+				}, null, -1), Z(" " + M(e.text(B(t).isClearingNotes ? "clearingAllNotes" : "clearAllNotes")), 1)], 8, Xd)
 			])
 		])]));
 	}
-}), Yd = { class: "ech-review-code tw:overflow-auto tw:rounded-box tw:bg-base-300 tw:p-3 tw:text-xs" }, Xd = /* @__PURE__ */ Ti({
+}), Qd = { class: "ech-review-code tw:overflow-auto tw:rounded-box tw:bg-base-300 tw:p-3 tw:text-xs" }, $d = /* @__PURE__ */ Ti({
 	__name: "CodeBlock",
 	props: { code: {} },
 	setup(e) {
 		let t = e, n = Xo(() => Fu(t.code));
-		return (e, t) => (q(), J("pre", Yd, [Y("code", null, [(q(!0), J(G, null, H(n.value, (e, t) => (q(), J("span", {
+		return (e, t) => (q(), J("pre", Qd, [Y("code", null, [(q(!0), J(G, null, H(n.value, (e, t) => (q(), J("span", {
 			key: t,
 			class: Kt(`ech-code-token--${e.kind}`)
 		}, M(e.value), 3))), 128))])]));
 	}
-}), Zd = {
+}), ef = {
 	key: 0,
 	class: "ech-review-center tw:min-h-0 tw:min-w-0 tw:gap-2"
-}, Qd = { class: "tw:dui-card tw:dui-card-border tw:min-h-0 tw:min-w-0 tw:overflow-hidden tw:bg-base-100" }, $d = { class: "tw:dui-card-body tw:min-h-0 tw:gap-0 tw:overflow-hidden tw:p-0" }, ef = { class: "tw:flex tw:shrink-0 tw:flex-wrap tw:items-center tw:justify-between tw:gap-2 tw:border-b tw:border-base-300 tw:px-4 tw:py-3" }, tf = { class: "tw:dui-card-title tw:m-0 tw:text-base" }, nf = { class: "tw:flex tw:flex-wrap tw:gap-1" }, rf = { class: "tw:dui-badge tw:dui-badge-sm" }, af = { class: "tw:dui-badge tw:dui-badge-sm" }, of = { class: "tw:dui-badge tw:dui-badge-sm" }, sf = { class: "tw:dui-badge tw:dui-badge-sm" }, cf = { class: "tw:dui-badge tw:dui-badge-sm" }, lf = { class: "ech-review-narrative tw:min-h-0 tw:flex-1 tw:overflow-y-auto" }, uf = { class: "tw:min-w-0 tw:p-4" }, df = { class: "tw:m-0 tw:mb-3 tw:text-sm tw:font-bold" }, ff = ["innerHTML"], pf = { class: "ech-review-journal tw:min-w-0 tw:border-base-300 tw:p-4" }, mf = { class: "tw:m-0 tw:mb-1 tw:text-sm tw:font-bold" }, hf = {
+}, tf = { class: "tw:dui-card tw:dui-card-border tw:min-h-0 tw:min-w-0 tw:overflow-hidden tw:bg-base-100" }, nf = { class: "tw:dui-card-body tw:min-h-0 tw:gap-0 tw:overflow-hidden tw:p-0" }, rf = { class: "tw:flex tw:shrink-0 tw:flex-wrap tw:items-center tw:justify-between tw:gap-2 tw:border-b tw:border-base-300 tw:px-4 tw:py-3" }, af = { class: "tw:dui-card-title tw:m-0 tw:text-base" }, of = { class: "tw:flex tw:flex-wrap tw:gap-1" }, sf = { class: "tw:dui-badge tw:dui-badge-sm" }, cf = { class: "tw:dui-badge tw:dui-badge-sm" }, lf = { class: "tw:dui-badge tw:dui-badge-sm" }, uf = { class: "tw:dui-badge tw:dui-badge-sm" }, df = { class: "tw:dui-badge tw:dui-badge-sm" }, ff = { class: "ech-review-narrative tw:min-h-0 tw:flex-1 tw:overflow-y-auto" }, pf = { class: "tw:min-w-0 tw:p-4" }, mf = { class: "tw:m-0 tw:mb-3 tw:text-sm tw:font-bold" }, hf = ["innerHTML"], gf = { class: "ech-review-journal tw:min-w-0 tw:border-base-300 tw:p-4" }, _f = { class: "tw:m-0 tw:mb-1 tw:text-sm tw:font-bold" }, vf = {
 	key: 0,
 	class: "tw:m-0 tw:mb-3 tw:text-xs tw:opacity-60"
-}, gf = ["innerHTML"], _f = {
+}, yf = ["innerHTML"], bf = {
 	key: 2,
 	class: "tw:opacity-70"
-}, vf = { class: "tw:dui-card tw:dui-card-border tw:min-h-0 tw:min-w-0 tw:overflow-hidden tw:bg-base-100" }, yf = { class: "tw:dui-card-body tw:min-h-0 tw:gap-3 tw:overflow-y-auto tw:p-4" }, bf = { class: "tw:flex tw:shrink-0 tw:flex-wrap tw:items-center tw:justify-between tw:gap-2" }, xf = { class: "tw:dui-card-title tw:m-0 tw:text-base" }, Sf = { class: "tw:dui-badge tw:dui-badge-sm" }, Cf = {
+}, xf = { class: "tw:dui-card tw:dui-card-border tw:min-h-0 tw:min-w-0 tw:overflow-hidden tw:bg-base-100" }, Sf = { class: "tw:dui-card-body tw:min-h-0 tw:gap-3 tw:overflow-y-auto tw:p-4" }, Cf = { class: "tw:flex tw:shrink-0 tw:flex-wrap tw:items-center tw:justify-between tw:gap-2" }, wf = { class: "tw:dui-card-title tw:m-0 tw:text-base" }, Tf = { class: "tw:dui-badge tw:dui-badge-sm" }, Ef = {
 	key: 0,
 	class: "tw:m-0 tw:shrink-0 tw:space-y-1 tw:pl-5 tw:text-sm"
-}, wf = {
+}, Df = {
 	key: 1,
 	class: "tw:m-0 tw:opacity-70"
-}, Tf = { class: "tw:mb-2 tw:flex tw:flex-wrap tw:items-center tw:gap-2" }, Ef = { class: "tw:m-0 tw:text-sm tw:font-bold" }, Df = { class: "tw:dui-badge tw:dui-badge-sm" }, Of = { class: "tw:text-xs tw:opacity-60" }, kf = {
+}, Of = { class: "tw:mb-2 tw:flex tw:flex-wrap tw:items-center tw:gap-2" }, kf = { class: "tw:m-0 tw:text-sm tw:font-bold" }, Af = { class: "tw:dui-badge tw:dui-badge-sm" }, jf = { class: "tw:text-xs tw:opacity-60" }, Mf = {
 	key: 0,
 	class: "tw:mb-3 tw:flex tw:flex-col tw:gap-1 tw:text-xs"
-}, Af = {
+}, Nf = {
 	key: 1,
 	class: "tw:m-0 tw:text-sm tw:opacity-70"
-}, jf = { class: "tw:mb-1 tw:flex tw:flex-wrap tw:items-center tw:gap-2 tw:text-xs" }, Mf = { class: "tw:dui-badge tw:dui-badge-sm" }, Nf = { class: "tw:font-mono tw:opacity-50" }, Pf = /* @__PURE__ */ Ti({
+}, Pf = { class: "tw:mb-1 tw:flex tw:flex-wrap tw:items-center tw:gap-2 tw:text-xs" }, Ff = { class: "tw:dui-badge tw:dui-badge-sm" }, If = { class: "tw:font-mono tw:opacity-50" }, Lf = /* @__PURE__ */ Ti({
 	__name: "ReviewContent",
 	props: { text: { type: Function } },
 	setup(e) {
-		let t = Hu();
-		return (n, r) => B(t).selectedDetail ? (q(), J("div", Zd, [Y("section", Qd, [Y("div", $d, [Y("header", ef, [Y("h2", tf, [r[0] ||= Y("i", {
+		let t = Wu();
+		return (n, r) => B(t).selectedDetail ? (q(), J("div", ef, [Y("section", tf, [Y("div", nf, [Y("header", rf, [Y("h2", af, [r[0] ||= Y("i", {
 			class: "fa-solid fa-scroll",
 			"aria-hidden": "true"
-		}, null, -1), Z(" " + M(e.text("criticalItem")), 1)]), Y("div", nf, [
-			Y("span", rf, M(B(t).selectedDetail.categoryLabel), 1),
-			Y("span", af, M(B(t).selectedDetail.locationLabel), 1),
-			Y("span", of, M(e.text("row")) + " " + M(B(t).selectedDetail.row + 1), 1),
-			Y("span", sf, M(e.text("wounds")) + " " + M(B(t).selectedDetail.wounds), 1),
-			Y("span", cf, M(B(t).selectedDetail.automationStatus), 1)
-		])]), Y("div", lf, [Y("article", uf, [Y("h3", df, [r[1] ||= Y("i", {
+		}, null, -1), Z(" " + M(e.text("criticalItem")), 1)]), Y("div", of, [
+			Y("span", sf, M(B(t).selectedDetail.categoryLabel), 1),
+			Y("span", cf, M(B(t).selectedDetail.locationLabel), 1),
+			Y("span", lf, M(e.text("row")) + " " + M(B(t).selectedDetail.row + 1), 1),
+			Y("span", uf, M(e.text("wounds")) + " " + M(B(t).selectedDetail.wounds), 1),
+			Y("span", df, M(B(t).selectedDetail.automationStatus), 1)
+		])]), Y("div", ff, [Y("article", pf, [Y("h3", mf, [r[1] ||= Y("i", {
 			class: "fa-solid fa-file-lines",
 			"aria-hidden": "true"
 		}, null, -1), Z(" " + M(e.text("itemText")), 1)]), Y("div", {
 			class: "ech-review-rich-text",
 			innerHTML: B(t).selectedDetail.itemHtml
-		}, null, 8, ff)]), Y("article", pf, [
-			Y("h3", mf, [r[2] ||= Y("i", {
+		}, null, 8, hf)]), Y("article", gf, [
+			Y("h3", _f, [r[2] ||= Y("i", {
 				class: "fa-solid fa-book-open",
 				"aria-hidden": "true"
 			}, null, -1), Z(" " + M(e.text("journalText")), 1)]),
-			B(t).selectedDetail.journalName ? (q(), J("p", hf, M(B(t).selectedDetail.journalName), 1)) : wo("", !0),
+			B(t).selectedDetail.journalName ? (q(), J("p", vf, M(B(t).selectedDetail.journalName), 1)) : wo("", !0),
 			B(t).selectedDetail.journalHtml ? (q(), J("div", {
 				key: 1,
 				class: "ech-review-rich-text",
 				innerHTML: B(t).selectedDetail.journalHtml
-			}, null, 8, gf)) : (q(), J("p", _f, M(e.text("journalMissing")), 1))
-		])])])]), Y("section", vf, [Y("div", yf, [
-			Y("header", bf, [Y("h2", xf, [r[3] ||= Y("i", {
+			}, null, 8, yf)) : (q(), J("p", bf, M(e.text("journalMissing")), 1))
+		])])])]), Y("section", xf, [Y("div", Sf, [
+			Y("header", Cf, [Y("h2", wf, [r[3] ||= Y("i", {
 				class: "fa-solid fa-code",
 				"aria-hidden": "true"
-			}, null, -1), Z(" " + M(e.text("automation")), 1)]), Y("span", Sf, M(B(t).selectedDetail.automationEffects.length) + " " + M(e.text("effects")), 1)]),
-			B(t).selectedDetail.automationSummary.length ? (q(), J("ul", Cf, [(q(!0), J(G, null, H(B(t).selectedDetail.automationSummary, (e) => (q(), J("li", { key: e }, M(e), 1))), 128))])) : wo("", !0),
+			}, null, -1), Z(" " + M(e.text("automation")), 1)]), Y("span", Tf, M(B(t).selectedDetail.automationEffects.length) + " " + M(e.text("effects")), 1)]),
+			B(t).selectedDetail.automationSummary.length ? (q(), J("ul", Ef, [(q(!0), J(G, null, H(B(t).selectedDetail.automationSummary, (e) => (q(), J("li", { key: e }, M(e), 1))), 128))])) : wo("", !0),
 			B(t).selectedDetail.automationEffects.length ? (q(!0), J(G, { key: 2 }, H(B(t).selectedDetail.automationEffects, (t) => (q(), J("article", {
 				key: t.id,
 				class: "tw:rounded-box tw:border tw:border-base-300 tw:bg-base-200 tw:p-3"
 			}, [
-				Y("header", Tf, [
-					Y("h3", Ef, M(t.name), 1),
-					Y("span", Df, M(t.phase), 1),
-					Y("span", Of, M(t.scripts.length) + " " + M(e.text("scripts")) + " · " + M(t.changes.length) + " " + M(e.text("changes")), 1)
+				Y("header", Of, [
+					Y("h3", kf, M(t.name), 1),
+					Y("span", Af, M(t.phase), 1),
+					Y("span", jf, M(t.scripts.length) + " " + M(e.text("scripts")) + " · " + M(t.changes.length) + " " + M(e.text("changes")), 1)
 				]),
-				t.changes.length ? (q(), J("div", kf, [(q(!0), J(G, null, H(t.changes, (e, t) => (q(), J("code", {
+				t.changes.length ? (q(), J("div", Mf, [(q(!0), J(G, null, H(t.changes, (e, t) => (q(), J("code", {
 					key: t,
 					class: "tw:rounded-sm tw:bg-base-300 tw:p-2"
 				}, M(e.key) + " = " + M(e.value) + " (mode " + M(e.mode) + ", priority " + M(e.priority) + ") ", 1))), 128))])) : wo("", !0),
-				t.scripts.length ? wo("", !0) : (q(), J("p", Af, M(e.text("effectWithoutScripts")), 1)),
+				t.scripts.length ? wo("", !0) : (q(), J("p", Nf, M(e.text("effectWithoutScripts")), 1)),
 				(q(!0), J(G, null, H(t.scripts, (e) => (q(), J("section", {
 					key: e.path,
 					class: "tw:mt-3 tw:min-w-0"
-				}, [Y("div", jf, [
+				}, [Y("div", Pf, [
 					Y("strong", null, M(e.label), 1),
-					Y("span", Mf, M(e.trigger), 1),
-					Y("span", Nf, M(e.path), 1)
-				]), X(Xd, { code: e.code }, null, 8, ["code"])]))), 128))
-			]))), 128)) : (q(), J("p", wf, M(e.text("noAutomation")), 1))
+					Y("span", Ff, M(e.trigger), 1),
+					Y("span", If, M(e.path), 1)
+				]), X($d, { code: e.code }, null, 8, ["code"])]))), 128))
+			]))), 128)) : (q(), J("p", Df, M(e.text("noAutomation")), 1))
 		])])])) : wo("", !0);
 	}
-}), Ff = { class: "ech-review-console tw:relative tw:flex tw:h-full tw:min-h-0 tw:flex-col tw:overflow-hidden tw:bg-base-100 tw:text-base-content" }, If = { class: "tw:flex tw:min-h-12 tw:shrink-0 tw:items-center tw:justify-between tw:gap-3 tw:border-b tw:border-base-300 tw:bg-base-200 tw:px-4 tw:py-2" }, Lf = { class: "tw:min-w-0" }, Rf = { class: "tw:m-0 tw:truncate tw:text-base tw:font-bold" }, zf = {
+}), Rf = { class: "ech-review-console tw:relative tw:flex tw:h-full tw:min-h-0 tw:flex-col tw:overflow-hidden tw:bg-base-100 tw:text-base-content" }, zf = { class: "tw:flex tw:min-h-12 tw:shrink-0 tw:items-center tw:justify-between tw:gap-3 tw:border-b tw:border-base-300 tw:bg-base-200 tw:px-4 tw:py-2" }, Bf = { class: "tw:min-w-0" }, Vf = { class: "tw:m-0 tw:truncate tw:text-base tw:font-bold" }, Hf = {
 	key: 0,
 	class: "tw:m-0 tw:truncate tw:text-xs tw:opacity-65"
-}, Bf = { class: "tw:min-w-0 tw:text-right tw:text-xs" }, Vf = {
+}, Uf = { class: "tw:min-w-0 tw:text-right tw:text-xs" }, Wf = {
 	key: 0,
 	role: "alert",
 	class: "tw:text-error"
-}, Hf = {
+}, Gf = {
 	key: 1,
 	role: "status",
 	class: "tw:opacity-75"
-}, Uf = { class: "ech-review-workspace tw:relative tw:min-h-0 tw:flex-1 tw:gap-2 tw:p-2" }, Wf = { class: "ech-review-side-column tw:min-h-0 tw:min-w-0 tw:gap-2" }, Gf = {
+}, Kf = { class: "ech-review-workspace tw:relative tw:min-h-0 tw:flex-1 tw:gap-2 tw:p-2" }, qf = { class: "ech-review-side-column tw:min-h-0 tw:min-w-0 tw:gap-2" }, Jf = {
 	key: 0,
 	class: "tw:absolute tw:inset-2 tw:z-30 tw:flex tw:items-center tw:justify-center tw:gap-2 tw:rounded-box tw:bg-base-100/90 tw:opacity-90"
-}, Kf = ["aria-label", "disabled"], qf = ["aria-label", "disabled"], Jf = /* @__PURE__ */ Ti({
+}, Yf = ["aria-label", "disabled"], Xf = ["aria-label", "disabled"], Zf = /* @__PURE__ */ Ti({
 	__name: "CriticalReviewApp",
 	props: {
 		localize: { type: Function },
 		applyCritical: { type: Function },
+		confirmClearNotes: { type: Function },
 		copyText: { type: Function },
 		createTestActor: { type: Function },
 		getTestActor: { type: Function },
@@ -5180,21 +5242,21 @@ var Wu = { class: "tw:dui-card tw:dui-card-border tw:min-h-0 tw:overflow-hidden 
 		saveNotes: { type: Function }
 	},
 	setup(e) {
-		let t = e, n = Hu();
+		let t = e, n = Wu();
 		n.initialize(t), Ui(() => void n.flushNotes());
 		function r(e) {
 			return t.localize(`WFRP4E_EXPANDED_CRITICAL_HITS.criticalReview.${e}`);
 		}
-		return (e, t) => (q(), J("div", Ff, [
-			Y("header", If, [Y("div", Lf, [Y("h1", Rf, M(B(n).selectedDetail?.name ?? r("title")), 1), B(n).entries.length ? (q(), J("p", zf, [Z(M(Math.max(0, B(n).selectedIndex + 1)) + " / " + M(B(n).entries.length) + " ", 1), B(n).selectedDetail ? (q(), J(G, { key: 0 }, [Z(" · " + M(B(n).selectedDetail.categoryLabel) + " / " + M(B(n).selectedDetail.locationLabel), 1)], 64)) : wo("", !0)])) : wo("", !0)]), Y("div", Bf, [B(n).errorMessage ? (q(), J("span", Vf, [t[3] ||= Y("i", {
+		return (e, t) => (q(), J("div", Rf, [
+			Y("header", zf, [Y("div", Bf, [Y("h1", Vf, M(B(n).selectedDetail?.name ?? r("title")), 1), B(n).entries.length ? (q(), J("p", Hf, [Z(M(Math.max(0, B(n).selectedIndex + 1)) + " / " + M(B(n).entries.length) + " ", 1), B(n).selectedDetail ? (q(), J(G, { key: 0 }, [Z(" · " + M(B(n).selectedDetail.categoryLabel) + " / " + M(B(n).selectedDetail.locationLabel), 1)], 64)) : wo("", !0)])) : wo("", !0)]), Y("div", Uf, [B(n).errorMessage ? (q(), J("span", Wf, [t[3] ||= Y("i", {
 				class: "fa-solid fa-triangle-exclamation",
 				"aria-hidden": "true"
-			}, null, -1), Z(" " + M(B(n).errorMessage), 1)])) : B(n).statusMessage ? (q(), J("span", Hf, [t[4] ||= Y("i", {
+			}, null, -1), Z(" " + M(B(n).errorMessage), 1)])) : B(n).statusMessage ? (q(), J("span", Gf, [t[4] ||= Y("i", {
 				class: "fa-solid fa-circle-check",
 				"aria-hidden": "true"
 			}, null, -1), Z(" " + M(B(n).statusMessage), 1)])) : wo("", !0)])]),
-			Y("main", Uf, [
-				X(zd, {
+			Y("main", Kf, [
+				X(Vd, {
 					categories: B(n).directory,
 					query: B(n).query,
 					"selected-id": B(n).selectedId,
@@ -5209,9 +5271,9 @@ var Wu = { class: "tw:dui-card tw:dui-card-border tw:min-h-0 tw:overflow-hidden 
 					"total-count",
 					"onSelect"
 				]),
-				X(Pf, { text: r }),
-				Y("aside", Wf, [X(md, { text: r }), X(Jd, { text: r })]),
-				B(n).isLoadingCatalog || B(n).isLoadingDetail ? (q(), J("div", Gf, [t[5] ||= Y("i", {
+				X(Lf, { text: r }),
+				Y("aside", qf, [X(gd, { text: r }), X(Zd, { text: r })]),
+				B(n).isLoadingCatalog || B(n).isLoadingDetail ? (q(), J("div", Jf, [t[5] ||= Y("i", {
 					class: "fa-solid fa-spinner fa-spin",
 					"aria-hidden": "true"
 				}, null, -1), Z(" " + M(r(B(n).isLoadingCatalog ? "loadingCatalog" : "loadingCritical")), 1)])) : wo("", !0)
@@ -5225,7 +5287,7 @@ var Wu = { class: "tw:dui-card tw:dui-card-border tw:min-h-0 tw:overflow-hidden 
 			}, [...t[6] ||= [Y("i", {
 				class: "fa-solid fa-chevron-left",
 				"aria-hidden": "true"
-			}, null, -1)]], 8, Kf),
+			}, null, -1)]], 8, Yf),
 			Y("button", {
 				class: "ech-review-edge-nav ech-review-edge-nav--next tw:dui-btn tw:dui-btn-circle tw:dui-btn-sm",
 				type: "button",
@@ -5235,15 +5297,15 @@ var Wu = { class: "tw:dui-card tw:dui-card-border tw:min-h-0 tw:overflow-hidden 
 			}, [...t[7] ||= [Y("i", {
 				class: "fa-solid fa-chevron-right",
 				"aria-hidden": "true"
-			}, null, -1)]], 8, qf)
+			}, null, -1)]], 8, Xf)
 		]));
 	}
-}), Yf = "expanded-critical-details", Xf = {
+}), Qf = "expanded-critical-details", $f = {
 	arm: "Arm",
 	body: "Body",
 	head: "Head",
 	leg: "Leg"
-}, Zf = [
+}, ep = [
 	`flags.${e}.automationStatus`,
 	`flags.${e}.category`,
 	`flags.${e}.location`,
@@ -5251,47 +5313,47 @@ var Wu = { class: "tw:dui-card tw:dui-card-border tw:min-h-0 tw:overflow-hidden 
 	"system.wounds.value",
 	"sort"
 ];
-async function Qf() {
-	let e = sp(u), t = await e.getIndex?.({ fields: Zf });
-	return (t ? Array.from(t) : await e.getDocuments()).flatMap((e) => rp(e));
+async function tp() {
+	let e = up(u), t = await e.getIndex?.({ fields: ep });
+	return (t ? Array.from(t) : await e.getDocuments()).flatMap((e) => op(e));
 }
-async function $f(e) {
-	let t = (await ep(e)).toObject?.() ?? {}, n = up(t, "flags", "wfrp4e-expanded-critical-hits") ?? {}, r = rp(t)[0];
+async function np(e) {
+	let t = (await rp(e)).toObject?.() ?? {}, n = pp(t, "flags", "wfrp4e-expanded-critical-hits") ?? {}, r = op(t)[0];
 	if (!r) throw Error(`Critical ${e} does not have valid review metadata.`);
-	let i = dp(t, "system", "description", "value"), a = await tp(i, e);
+	let i = mp(t, "system", "description", "value"), a = await ip(i, e);
 	return {
 		...r,
 		automationEffects: yu(t.effects),
-		automationSummary: fp(n.automationSummary),
-		itemHtml: await ip(i),
-		journalHtml: await ip(a.html),
+		automationSummary: hp(n.automationSummary),
+		itemHtml: await sp(i),
+		journalHtml: await sp(a.html),
 		journalName: a.name
 	};
 }
-async function ep(e) {
-	let t = await sp(u).getDocument?.(e);
+async function rp(e) {
+	let t = await up(u).getDocument?.(e);
 	if (!t?.toObject) throw Error(`Critical Item ${e} was not found.`);
 	return t;
 }
-async function tp(e, t) {
+async function ip(e, t) {
 	let n = e.match(/JournalEntry\.([A-Za-z0-9]+)\.JournalEntryPage\.([A-Za-z0-9]+)/);
-	if (!n?.[1]) return np(t);
-	let r = ap(await sp(Yf).getDocument?.(n[1]), n[2] ?? t);
+	if (!n?.[1]) return ap(t);
+	let r = cp(await up(Qf).getDocument?.(n[1]), n[2] ?? t);
 	return r ? {
-		html: dp(r, "text", "content"),
-		name: dp(r, "name")
+		html: mp(r, "text", "content"),
+		name: mp(r, "name")
 	} : {
 		html: "",
 		name: ""
 	};
 }
-async function np(t) {
-	let n = await sp(Yf).getDocuments();
+async function ap(t) {
+	let n = await up(Qf).getDocuments();
 	for (let r of n) {
-		let n = op(r).find((n) => up(n, "flags", e)?.criticalItemId === t);
+		let n = lp(r).find((n) => pp(n, "flags", e)?.criticalItemId === t);
 		if (n) return {
-			html: dp(n, "text", "content"),
-			name: dp(n, "name")
+			html: mp(n, "text", "content"),
+			name: mp(n, "name")
 		};
 	}
 	return {
@@ -5299,82 +5361,82 @@ async function np(t) {
 		name: ""
 	};
 }
-function rp(t) {
-	let n = hp(t), r = up(n, "flags", e), i = r?.category, a = r?.location, o = dp(n, "_id") || dp(n, "id"), s = dp(n, "name");
-	return !o || !s || !cp(i) || !lp(a) ? [] : [{
-		automationStatus: pp(r?.automationStatus, "none"),
+function op(t) {
+	let n = vp(t), r = pp(n, "flags", e), i = r?.category, a = r?.location, o = mp(n, "_id") || mp(n, "id"), s = mp(n, "name");
+	return !o || !s || !dp(i) || !fp(a) ? [] : [{
+		automationStatus: gp(r?.automationStatus, "none"),
 		category: i,
 		categoryLabel: te[i],
 		id: o,
 		location: a,
-		locationLabel: Xf[a],
+		locationLabel: $f[a],
 		name: s,
-		row: mp(r?.row),
-		sort: mp(n?.sort),
-		wounds: dp(n, "system", "wounds", "value")
+		row: _p(r?.row),
+		sort: _p(n?.sort),
+		wounds: mp(n, "system", "wounds", "value")
 	}];
 }
-async function ip(e) {
+async function sp(e) {
 	return e ? foundry.applications.ux.TextEditor.implementation.enrichHTML(e, { secrets: !0 }) : "";
 }
-function ap(e, t) {
-	return op(e).find((e) => dp(e, "id") === t || dp(e, "_id") === t);
+function cp(e, t) {
+	return lp(e).find((e) => mp(e, "id") === t || mp(e, "_id") === t);
 }
-function op(e) {
-	let t = hp(e)?.pages;
+function lp(e) {
+	let t = vp(e)?.pages;
 	if (!t || !(Symbol.iterator in Object(t))) return [];
 	let n = [];
 	for (let e of t) {
-		let t = hp(e);
+		let t = vp(e);
 		t && n.push(t);
 	}
 	return n;
 }
-function sp(t) {
+function up(t) {
 	let n = game.packs.get(`${e}.${t}`);
 	if (!n) throw Error(`Required compendium ${t} is not available.`);
 	return n;
 }
-function cp(e) {
+function dp(e) {
 	return y.includes(e);
 }
-function lp(e) {
+function fp(e) {
 	return v.includes(e);
 }
-function up(e, ...t) {
-	let n = hp(e);
-	for (let e of t) n = hp(n?.[e]);
+function pp(e, ...t) {
+	let n = vp(e);
+	for (let e of t) n = vp(n?.[e]);
 	return n;
 }
-function dp(e, ...t) {
+function mp(e, ...t) {
 	let n = e;
-	for (let e of t) n = hp(n)?.[e];
+	for (let e of t) n = vp(n)?.[e];
 	return typeof n == "string" ? n : "";
 }
-function fp(e) {
+function hp(e) {
 	return Array.isArray(e) ? e.filter((e) => typeof e == "string") : [];
 }
-function pp(e, t) {
+function gp(e, t) {
 	return typeof e == "string" ? e : t;
 }
-function mp(e) {
+function _p(e) {
 	return typeof e == "number" ? e : 0;
 }
-function hp(e) {
+function vp(e) {
 	return typeof e == "object" && e ? e : void 0;
 }
 //#endregion
 //#region src/module/wfrp4e/critical-review/actor.ts
-var gp = "criticalReviewTestActor", _p = "Expanded Critical Review — Test Subject";
-async function vp() {
-	let t = Cp();
-	if (t) return Tp(t);
+var yp = "criticalReviewTestActor", bp = "Expanded Critical Review — Test Subject";
+async function xp() {
+	let t = Ep();
+	if (t) return Op(t);
 	let n = await Actor.implementation?.create({
-		flags: { [e]: { [gp]: !0 } },
+		flags: { [e]: { [yp]: !0 } },
 		img: "icons/svg/mystery-man.svg",
-		name: _p,
+		name: bp,
 		system: {
-			characteristics: Ep(),
+			characteristics: kp(),
 			status: { wounds: {
 				max: 14,
 				value: 14
@@ -5383,40 +5445,40 @@ async function vp() {
 		type: "character"
 	});
 	if (!n) throw Error("Foundry could not create the Critical review test Actor.");
-	return await game.settings.set(e, r, n.id), Tp(n);
+	return await game.settings.set(e, r, n.id), Op(n);
 }
-async function yp() {
-	let t = Cp();
-	return t && await t.delete(), await game.settings.set(e, r, ""), vp();
+async function Sp() {
+	let t = Ep();
+	return t && await t.delete(), await game.settings.set(e, r, ""), xp();
 }
-function bp() {
-	let e = Cp();
-	return e ? Tp(e) : void 0;
+function Cp() {
+	let e = Ep();
+	return e ? Op(e) : void 0;
 }
-async function xp(e, t) {
-	let n = Cp();
+async function wp(e, t) {
+	let n = Ep();
 	if (!n) throw Error("Create the Critical review test Actor first.");
-	let r = (await ep(e)).toObject?.();
+	let r = (await rp(e)).toObject?.();
 	if (!r) throw Error(`Critical Item ${e} could not be copied.`);
 	delete r._id, delete r._key, delete r.folder, delete r.sort;
-	let i = Dp(Dp(r, "system"), "location");
-	return i.key = t, i.value = game.wfrp4e?.config?.locations?.[t] ?? t, await n.createEmbeddedDocuments("Item", [r]), Tp(n);
+	let i = Ap(Ap(r, "system"), "location");
+	return i.key = t, i.value = game.wfrp4e?.config?.locations?.[t] ?? t, await n.createEmbeddedDocuments("Item", [r]), Op(n);
 }
-function Sp() {
-	let e = Cp();
+function Tp() {
+	let e = Ep();
 	if (!e) throw Error("The Critical review test Actor is unavailable.");
 	e.sheet?.render(!0);
 }
-function Cp() {
+function Ep() {
 	let t = game.settings.get(e, r), n = typeof t == "string" ? game.actors.get(t) : void 0;
-	if (wp(n)) return n;
-	let i = game.actors.find((e) => wp(e));
-	return wp(i) ? i : void 0;
+	if (Dp(n)) return n;
+	let i = game.actors.find((e) => Dp(e));
+	return Dp(i) ? i : void 0;
 }
-function wp(t) {
-	return t?.getFlag(e, gp) === !0;
+function Dp(t) {
+	return t?.getFlag(e, yp) === !0;
 }
-function Tp(e) {
+function Op(e) {
 	let t = e.itemTypes?.critical, n = Array.isArray(t) ? t.flatMap((e) => e.name ? [e.name] : []) : [];
 	return {
 		criticalCount: n.length,
@@ -5427,7 +5489,7 @@ function Tp(e) {
 		uuid: e.uuid
 	};
 }
-function Ep() {
+function kp() {
 	return Object.fromEntries([
 		"ws",
 		"bs",
@@ -5441,7 +5503,7 @@ function Ep() {
 		"fel"
 	].map((e) => [e, { initial: 35 }]));
 }
-function Dp(e, t) {
+function Ap(e, t) {
 	let n = e[t];
 	if (typeof n == "object" && n) return n;
 	let r = {};
@@ -5449,18 +5511,18 @@ function Dp(e, t) {
 }
 //#endregion
 //#region src/module/wfrp4e/critical-review/notes.ts
-function Op() {
-	return Ap(game.settings.get(e, i));
+function jp() {
+	return Np(game.settings.get(e, i));
 }
-async function kp(t) {
-	await game.settings.set(e, i, Ap(t));
+async function Mp(t) {
+	await game.settings.set(e, i, Np(t));
 }
-function Ap(e) {
+function Np(e) {
 	return typeof e != "object" || !e ? {} : Object.fromEntries(Object.entries(e).filter((e) => typeof e[1] == "string"));
 }
 //#endregion
 //#region src/module/apps/critical-review/CriticalReviewApplication.ts
-var jp = class extends ml {
+var Pp = class extends ml {
 	static DEFAULT_OPTIONS = {
 		id: `${e}-critical-review-console`,
 		position: {
@@ -5475,25 +5537,49 @@ var jp = class extends ml {
 		}
 	};
 	getVueComponent() {
-		return Jf;
+		return Zf;
 	}
 	getVueProps() {
 		return {
-			applyCritical: (e, t) => xp(e, t),
-			copyText: Mp,
-			createTestActor: vp,
-			getTestActor: bp,
-			loadDetail: $f,
-			loadIndex: Qf,
-			loadNotes: Op,
+			applyCritical: (e, t) => wp(e, t),
+			confirmClearNotes: Fp,
+			copyText: Ip,
+			createTestActor: xp,
+			getTestActor: Cp,
+			loadDetail: np,
+			loadIndex: tp,
+			loadNotes: jp,
 			localize: (e) => game.i18n.localize(e),
-			openTestActor: Sp,
-			resetTestActor: yp,
-			saveNotes: kp
+			openTestActor: Tp,
+			resetTestActor: Sp,
+			saveNotes: Mp
 		};
 	}
 };
-async function Mp(e) {
+async function Fp(e) {
+	let t = document.createElement("div"), n = document.createElement("p"), r = e === 1 ? "clearAllNotesConfirmationOne" : "clearAllNotesConfirmationMany";
+	return n.textContent = game.i18n.format(`WFRP4E_EXPANDED_CRITICAL_HITS.criticalReview.${r}`, { count: e }), t.append(n), await foundry.applications.api.DialogV2.wait({
+		buttons: [{
+			action: "clear",
+			callback: () => !0,
+			class: "btn btn-error",
+			icon: "fa-solid fa-trash-can",
+			label: game.i18n.localize("WFRP4E_EXPANDED_CRITICAL_HITS.criticalReview.clearAllNotes")
+		}, {
+			action: "cancel",
+			callback: () => !1,
+			class: "btn",
+			default: !0,
+			label: game.i18n.localize("WFRP4E_EXPANDED_CRITICAL_HITS.criticalReview.cancel"),
+			type: "button"
+		}],
+		content: t,
+		modal: !0,
+		position: { width: 420 },
+		window: { title: game.i18n.localize("WFRP4E_EXPANDED_CRITICAL_HITS.criticalReview.clearAllNotesTitle") }
+	}) === !0;
+}
+async function Ip(e) {
 	if (navigator.clipboard?.writeText) {
 		await navigator.clipboard.writeText(e);
 		return;
@@ -5505,25 +5591,25 @@ async function Mp(e) {
 }
 //#endregion
 //#region src/module/apps/critical-review/register.ts
-function Np() {
+function Lp() {
 	game.settings.registerMenu(e, "criticalReviewConsole", {
 		name: "WFRP4E_EXPANDED_CRITICAL_HITS.criticalReview.settingsName",
 		hint: "WFRP4E_EXPANDED_CRITICAL_HITS.criticalReview.settingsHint",
 		icon: "fa-solid fa-microscope",
 		label: "WFRP4E_EXPANDED_CRITICAL_HITS.criticalReview.settingsLabel",
 		restricted: !0,
-		type: jp
+		type: Pp
 	});
 }
 //#endregion
 //#region src/functions/critical-hits/presentation/index.ts
-var Pp = /^ech-crit-(?:core|upinarms)-(?:arrowsbolts|bullets|cold|crushing|cutting|flameenergy|piercing|shrapnelshot|sling|teethclaws|unarmed)-(?:arm|body|head|leg)$/;
-function Fp(e) {
-	return Pp.test(e);
+var Rp = /^ech-crit-(?:core|upinarms)-(?:arrowsbolts|bullets|cold|crushing|cutting|flameenergy|piercing|shrapnelshot|sling|teethclaws|unarmed)-(?:arm|body|head|leg)$/;
+function zp(e) {
+	return Rp.test(e);
 }
 //#endregion
 //#region src/module/wfrp4e/critical-replacement/debug.ts
-function Ip(e) {
+function Bp(e) {
 	return {
 		criticalLocation: e.criticalLocation,
 		messageId: e.messageId,
@@ -5531,8 +5617,8 @@ function Ip(e) {
 		sourceItemUuid: e.sourceItemUuid
 	};
 }
-function Lp(e) {
-	let t = Rp(e);
+function Vp(e) {
+	let t = Hp(e);
 	if (t) return {
 		id: t.id,
 		name: t.name,
@@ -5540,21 +5626,21 @@ function Lp(e) {
 		uuid: t.uuid
 	};
 }
-function Rp(e) {
+function Hp(e) {
 	return typeof e == "object" && e ? e : void 0;
 }
 //#endregion
 //#region src/module/wfrp4e/critical-replacement/failure.ts
-function zp(t, n, r) {
+function Up(t, n, r) {
 	return c(`${e} | ${t}`, r), ui.notifications?.error(t), [
 		"<div class=\"wfrp4e chat-card\">",
 		"<h3>Expanded Critical Hit Failed</h3>",
-		`<p>${Bp(t)}</p>`,
-		`<p><strong>Table:</strong> ${Bp(n)}</p>`,
+		`<p>${Wp(t)}</p>`,
+		`<p><strong>Table:</strong> ${Wp(n)}</p>`,
 		"</div>"
 	].join("");
 }
-function Bp(e) {
+function Wp(e) {
 	return e.replace(/[&<>"']/g, (e) => ({
 		"&": "&amp;",
 		"<": "&lt;",
@@ -5565,31 +5651,31 @@ function Bp(e) {
 }
 //#endregion
 //#region src/module/wfrp4e/critical-replacement/item-posting.ts
-function Vp(e, t) {
-	if (!Wp(e)) return;
+function Gp(e, t) {
+	if (!Jp(e)) return;
 	let n = t.criticalLocation;
 	if (e.type !== "critical" || typeof n != "string") return e;
 	let r = e.toObject, i = Item?.implementation;
 	if (typeof r != "function" || typeof i != "function") return e;
-	let a = r.call(e), o = Hp(Hp(a, "system"), "location"), s = game.wfrp4e?.config?.locations ?? {};
+	let a = r.call(e), o = Kp(Kp(a, "system"), "location"), s = game.wfrp4e?.config?.locations ?? {};
 	return o.key = n, o.value = s[n] ?? n, new i(a);
 }
-function Hp(e, t) {
-	let n = Up(e[t]);
+function Kp(e, t) {
+	let n = qp(e[t]);
 	if (n) return n;
 	let r = {};
 	return e[t] = r, r;
 }
-function Up(e) {
+function qp(e) {
 	return typeof e == "object" && e ? e : void 0;
 }
-function Wp(e) {
+function Jp(e) {
 	let t = e;
 	return typeof t == "object" && !!t && typeof t.postItem == "function";
 }
 //#endregion
 //#region src/module/wfrp4e/runtime-values.ts
-function Gp(e) {
+function Yp(e) {
 	return Array.isArray(e) ? e : [];
 }
 function $(e) {
@@ -5597,19 +5683,19 @@ function $(e) {
 }
 //#endregion
 //#region src/module/wfrp4e/item/damage-defaults.ts
-var Kp = "teethClaws", qp = {};
-function Jp(e) {
-	if (Yp(e)) return {
-		categories: [Kp],
+var Xp = "teethClaws", Zp = {};
+function Qp(e) {
+	if ($p(e)) return {
+		categories: [Xp],
 		labels: ["Teeth & Claws"],
 		lores: [],
 		source: "creatureTrait"
 	};
-	if (Xp(e)) {
-		let t = $p(e), n = em(t);
+	if (em(e)) {
+		let t = rm(e), n = im(t);
 		return {
-			categories: rm(n.map((e) => ne[e])),
-			labels: rm(n.map((e) => S[e])),
+			categories: sm(n.map((e) => ne[e])),
+			labels: sm(n.map((e) => S[e])),
 			lores: t,
 			source: "spellLore"
 		};
@@ -5621,95 +5707,95 @@ function Jp(e) {
 		source: "none"
 	};
 }
-function Yp(e) {
+function $p(e) {
 	let t = $(e), n = $($(t?.system)?.rollable);
 	return t?.type === "trait" && n?.damage === !0;
 }
-function Xp(e) {
+function em(e) {
 	let t = $(e);
-	return t?.type === "spell" && Qp(t?.system);
-}
-function Zp(e) {
-	let t = $(e);
-	return t?.type === "prayer" && Qp(t?.system);
-}
-function Qp(e) {
-	let t = $(e), n = $(t?.damage), r = $(t?.magicMissile);
-	return tm(n?.value) || tm(n?.dice) || n?.addSL === !0 || r?.value === !0;
-}
-function $p(e) {
-	let t = $($($(e)?.system)?.lore), n = nm(t?.chosen);
-	return n ? [n] : rm((Array.isArray(t?.value) ? Gp(t?.value) : [t?.value]).map(nm).filter((e) => !!e));
-}
-function em(e, t = qp) {
-	return rm((e.length > 0 ? e : [""]).map((e) => t[nm(e) ?? ""] ?? "energy"));
+	return t?.type === "spell" && nm(t?.system);
 }
 function tm(e) {
-	return typeof e == "number" ? e !== 0 : typeof e == "string" && e.trim().length > 0;
+	let t = $(e);
+	return t?.type === "prayer" && nm(t?.system);
 }
 function nm(e) {
-	if (typeof e == "string") return e.trim().toLowerCase() || void 0;
+	let t = $(e), n = $(t?.damage), r = $(t?.magicMissile);
+	return am(n?.value) || am(n?.dice) || n?.addSL === !0 || r?.value === !0;
 }
 function rm(e) {
+	let t = $($($(e)?.system)?.lore), n = om(t?.chosen);
+	return n ? [n] : sm((Array.isArray(t?.value) ? Yp(t?.value) : [t?.value]).map(om).filter((e) => !!e));
+}
+function im(e, t = Zp) {
+	return sm((e.length > 0 ? e : [""]).map((e) => t[om(e) ?? ""] ?? "energy"));
+}
+function am(e) {
+	return typeof e == "number" ? e !== 0 : typeof e == "string" && e.trim().length > 0;
+}
+function om(e) {
+	if (typeof e == "string") return e.trim().toLowerCase() || void 0;
+}
+function sm(e) {
 	return [...new Set(e)];
 }
 //#endregion
 //#region src/module/wfrp4e/item/wounding-overrides.ts
-var im = "damageTypes", am = new Map(b.map((e) => [x[e], e]));
-function om(e) {
-	let t = new Set([...sm(e), ...lm(e)]);
+var cm = "damageTypes", lm = new Map(b.map((e) => [x[e], e]));
+function um(e) {
+	let t = new Set([...dm(e), ...pm(e)]);
 	return b.filter((e) => t.has(e));
 }
-function sm(t) {
+function dm(t) {
 	let n = $(t), r = n?.getFlag, i = $($(n?.flags)?.[e]);
-	return cm(typeof r == "function" ? r.call(t, e, im) : i?.[im]);
+	return fm(typeof r == "function" ? r.call(t, e, cm) : i?.[cm]);
 }
-function cm(e) {
-	let t = new Set(Gp(e).filter(fm));
+function fm(e) {
+	let t = new Set(Yp(e).filter(gm));
 	return b.filter((e) => t.has(e));
 }
-function lm(e) {
-	let t = Gp($($($(e)?.system)?.qualities)?.value), n = /* @__PURE__ */ new Set();
+function pm(e) {
+	let t = Yp($($($(e)?.system)?.qualities)?.value), n = /* @__PURE__ */ new Set();
 	for (let e of t) {
 		let t = $(e);
-		if (!um(t)) continue;
-		let r = t?.name, i = typeof r == "string" ? am.get(r) : void 0;
+		if (!mm(t)) continue;
+		let r = t?.name, i = typeof r == "string" ? lm.get(r) : void 0;
 		i && n.add(i);
 	}
 	return b.filter((e) => n.has(e));
 }
-function um(e) {
+function mm(e) {
 	let t = e?.group;
-	return dm(t) ? e?.active === !0 : !0;
+	return hm(t) ? e?.active === !0 : !0;
 }
-function dm(e) {
+function hm(e) {
 	return typeof e == "number" ? Number.isFinite(e) : typeof e == "string" && e.trim() !== "" && Number.isFinite(Number(e));
 }
-function fm(e) {
+function gm(e) {
 	return typeof e == "string" && b.includes(e);
 }
 //#endregion
 //#region src/module/wfrp4e/quality-extraction.ts
-function pm(e) {
-	let t = mm(e);
+function _m(e) {
+	let t = vm(e);
 	return {
 		explicitCategories: ae(t),
 		weaponPropertyKeys: t,
-		weaponTypeKeys: hm(e)
+		weaponTypeKeys: ym(e)
 	};
 }
-function mm(e) {
+function vm(e) {
 	let t = $(e), n = $(t?.system), r = $(t?.properties), i = $(n?.properties), a = [$(r?.qualities), $(i?.qualities)], o = /* @__PURE__ */ new Set();
-	for (let t of sm(e)) o.add(x[t]);
+	for (let t of dm(e)) o.add(x[t]);
 	for (let e of a) for (let t of Object.keys(e ?? {})) o.add(t);
-	let s = Gp($(n?.qualities)?.value);
+	let s = Yp($(n?.qualities)?.value);
 	for (let e of s) {
 		let t = $(e), n = t?.name;
-		typeof n == "string" && um(t) && o.add(n);
+		typeof n == "string" && mm(t) && o.add(n);
 	}
 	return [...o];
 }
-function hm(e) {
+function ym(e) {
 	let t = $($(e)?.system), n = /* @__PURE__ */ new Set();
 	for (let e of [
 		t?.weaponGroup,
@@ -5719,16 +5805,16 @@ function hm(e) {
 		t?.ammunitionGroup,
 		t?.ammoGroup,
 		t?.category
-	]) gm(e, n);
+	]) bm(e, n);
 	return [...n];
 }
-function gm(e, t) {
+function bm(e, t) {
 	if (typeof e == "string") {
 		t.add(e);
 		return;
 	}
 	if (Array.isArray(e)) {
-		for (let n of e) gm(n, t);
+		for (let n of e) bm(n, t);
 		return;
 	}
 	let n = $(e);
@@ -5739,12 +5825,12 @@ function gm(e, t) {
 		"label",
 		"value",
 		"type"
-	]) gm(n[e], t);
+	]) bm(n[e], t);
 }
 //#endregion
 //#region src/module/wfrp4e/damage-category-resolution.ts
-function _m(e) {
-	let t = pm(e), n = Jp(e);
+function xm(e) {
+	let t = _m(e), n = Qp(e);
 	return {
 		clues: t,
 		defaults: n,
@@ -5760,9 +5846,9 @@ function _m(e) {
 }
 //#endregion
 //#region src/module/wfrp4e/critical-replacement.ts
-var vm = !1;
-function ym() {
-	if (vm) {
+var Sm = !1;
+function Cm() {
+	if (Sm) {
 		a(`${e} | Critical replacement patch already installed.`);
 		return;
 	}
@@ -5777,39 +5863,39 @@ function ym() {
 	}
 	let n = t.findTable.bind(t), r = t.formatChatRoll.bind(t);
 	t.formatChatRoll = async (t, i = {}, o = null) => {
-		if (Fp(t)) {
+		if (zp(t)) {
 			try {
-				let e = await bm(t, i, o);
+				let e = await wm(t, i, o);
 				if (e !== void 0) return e;
 			} catch (e) {
-				return zp(`Drowsy's WFRP4e Expanded Damage System could not roll ${t}. See the browser console for details.`, t, e);
+				return Up(`Drowsy's WFRP4e Expanded Damage System could not roll ${t}. See the browser console for details.`, t, e);
 			}
 			return r(t, i, o);
 		}
-		let s = wm(t);
+		let s = Om(t);
 		if (!Jl() || !s) return s && a(`${e} | Critical replacement fallthrough`, {
 			table: t,
 			reason: "replacement disabled",
-			options: Ip(i)
+			options: Bp(i)
 		}), r(t, i, o);
-		let c = Sm(t, i), l = Ee(i.messageId), u, d, f, p, m = l?.category;
+		let c = Em(t, i), l = Ee(i.messageId), u, d, f, p, m = l?.category;
 		if (a(`${e} | Critical replacement inspecting WFRP critical roll`, {
 			table: t,
 			location: c,
-			options: Ip(i)
+			options: Bp(i)
 		}), !m) {
 			try {
-				u = await Cm(i);
+				u = await Dm(i);
 			} catch (e) {
-				return zp("Drowsy's WFRP4e Expanded Damage System could not resolve the critical source item. See the browser console for details.", t, e);
+				return Up("Drowsy's WFRP4e Expanded Damage System could not resolve the critical source item. See the browser console for details.", t, e);
 			}
-			let e = _m(u);
+			let e = xm(u);
 			d = e.clues, f = e.defaults, p = e.resolution, m = oe(e.resolution.categories);
 		}
 		if (a(`${e} | Critical replacement damage category resolution`, {
 			table: t,
 			location: c,
-			sourceItem: Lp(u),
+			sourceItem: Vp(u),
 			categoryClues: d,
 			categoryDefaults: f,
 			categoryResolution: p,
@@ -5822,7 +5908,7 @@ function ym() {
 			reason: c ? "damage category unavailable" : "location unavailable"
 		}), r(t, i, o);
 		let h = Ll(!!game.settings.get("wfrp4e", "uiaCrits")), g = Fl(h, m, c);
-		if (!n(g)) return zp(`Drowsy's WFRP4e Expanded Damage System table ${g} is missing from the module compendium.`, g);
+		if (!n(g)) return Up(`Drowsy's WFRP4e Expanded Damage System table ${g} is missing from the module compendium.`, g);
 		a(`${e} | Critical replacement rolling expanded table`, {
 			table: t,
 			expandedTableKey: g,
@@ -5831,26 +5917,26 @@ function ym() {
 			location: c
 		});
 		try {
-			let e = await bm(g, i, o);
+			let e = await wm(g, i, o);
 			if (e !== void 0) return e;
 		} catch (e) {
-			return zp(`Drowsy's WFRP4e Expanded Damage System could not roll ${g}. See the browser console for details.`, g, e);
+			return Up(`Drowsy's WFRP4e Expanded Damage System could not roll ${g}. See the browser console for details.`, g, e);
 		}
-		return zp(`Drowsy's WFRP4e Expanded Damage System could not use WFRP's RollTable API for ${g}.`, g);
-	}, vm = !0, a(`${e} | Critical replacement patch installed.`);
+		return Up(`Drowsy's WFRP4e Expanded Damage System could not use WFRP's RollTable API for ${g}.`, g);
+	}, Sm = !0, a(`${e} | Critical replacement patch installed.`);
 }
-async function bm(e, t, n) {
+async function wm(e, t, n) {
 	let r = game.wfrp4e?.tables?.rollTable;
 	if (typeof r != "function") return;
 	let i = await r.call(game.wfrp4e.tables, e, t, n);
-	if (await xm(i, t)) return null;
-	let a = Tm(i);
+	if (await Tm(i, t)) return null;
+	let a = km(i);
 	return t.returnResult ? i : a?.result;
 }
-async function xm(t, n) {
-	let r = Tm(Tm(t)?.object)?.documentUuid;
+async function Tm(t, n) {
+	let r = km(km(t)?.object)?.documentUuid;
 	if (typeof r != "string") return a(`${e} | Expanded critical result had no document UUID`, { result: t }), !1;
-	let i = Vp(await fromUuid(r), n);
+	let i = Gp(await fromUuid(r), n);
 	if (!i) throw Error(`Could not resolve expanded critical item ${r}.`);
 	return a(`${e} | Posting expanded critical item`, {
 		documentUuid: r,
@@ -5858,86 +5944,86 @@ async function xm(t, n) {
 		criticalLocation: n.criticalLocation
 	}), await i.postItem(void 0, { "flags.wfrp4e.sourceMessageId": n.messageId }), !0;
 }
-function Sm(e, t) {
+function Em(e, t) {
 	let n = t.criticalLocation;
 	return Il(typeof n == "string" ? n : e.replace(/^crit/i, ""));
 }
-async function Cm(e) {
+async function Dm(e) {
 	let t = e.sourceItemUuid;
 	if (typeof t == "string") return await fromUuid(t);
 	let n = e.messageId;
 	if (typeof n != "string") return;
-	let r = Tm(Tm(game.messages.get(n)?.system)?.test), i = Tm(r?.preData);
+	let r = km(km(game.messages.get(n)?.system)?.test), i = km(r?.preData);
 	return r?.item ?? r?.weapon ?? i?.item;
 }
-function wm(e) {
+function Om(e) {
 	return /^crit(?:head|body|arm|leg|larm|rarm|lleg|rleg)$/i.test(e);
 }
-function Tm(e) {
+function km(e) {
 	return typeof e == "object" && e ? e : void 0;
 }
 //#endregion
 //#region src/module/wfrp4e/wounding-properties/support.ts
-var Em = "ech-wounding-properties", Dm = new Set(Object.values(x));
-function Om(e) {
+var Am = "ech-wounding-properties", jm = new Set(Object.values(x));
+function Mm(e) {
 	let t = { ...e };
 	for (let e of b) t[x[e]] = S[e];
 	return t;
 }
-function km(e) {
-	return Pm(e) || Yp(e) || Fm(e);
+function Nm(e) {
+	return Rm(e) || $p(e) || zm(e);
 }
-function Am(e) {
-	return km(e);
+function Pm(e) {
+	return Nm(e);
 }
-function jm(e) {
-	let t = om(e).map((e) => S[e]);
+function Fm(e) {
+	let t = um(e).map((e) => S[e]);
 	if (t.length > 0) return t;
-	let n = Jp(e);
+	let n = Qp(e);
 	if (n.labels.length > 0) return n.labels.map((e) => `${e} (Default)`);
-	let r = _m(e).resolution, i = r.source === "weaponProperty" || r.source === "weaponType" ? " (Inferred)" : "";
+	let r = xm(e).resolution, i = r.source === "weaponProperty" || r.source === "weaponType" ? " (Inferred)" : "";
 	return r.categories.map((e) => `${te[e]}${i}`);
 }
-function Mm(e) {
+function Im(e) {
 	if (!(typeof e != "object" || !e)) return e;
 }
-function Nm(e) {
+function Lm(e) {
 	if (typeof e != "object" || !e) return;
 	let t = e;
 	if (!(t.qualities !== void 0 && !Array.isArray(t.qualities))) return t;
 }
-function Pm(e) {
+function Rm(e) {
 	return e?.type === "weapon" || e?.type === "ammunition" || e?.system?.isWeapon === !0;
 }
-function Fm(e) {
-	return Xp(e) || Zp(e);
+function zm(e) {
+	return em(e) || tm(e);
 }
 //#endregion
 //#region src/module/wfrp4e/wounding-properties/actions.ts
-var Im = `.${Em}__sheet-row a[data-ech-action="configureProperties"]`, Lm = /* @__PURE__ */ new Map(), Rm = !1;
-function zm() {
-	Rm ||= (document.addEventListener("click", Km, !0), !0);
+var Bm = `.${Am}__sheet-row a[data-ech-action="configureProperties"]`, Vm = /* @__PURE__ */ new Map(), Hm = !1;
+function Um() {
+	Hm ||= (document.addEventListener("click", Xm, !0), !0);
 }
-function Bm(e) {
+function Wm(e) {
 	return e?.uuid;
 }
-function Vm(e, t) {
-	Lm.set(e, t);
+function Gm(e, t) {
+	Vm.set(e, t);
 }
-function Hm(e) {
+function Km(e) {
 	if (e?.type === "spell" || e?.type === "prayer") {
-		Um(e);
+		qm(e);
 		return;
 	}
-	let t = Ym();
+	let t = $m();
 	!e || !t || new t(e).render(!0);
 }
-async function Um(t) {
+async function qm(t) {
 	if (typeof t.update != "function") return;
-	let n = Wm(new Set(om(t))), r = await foundry.applications.api.DialogV2.wait({
+	let n = Jm(new Set(um(t))), r = await foundry.applications.api.DialogV2.wait({
 		buttons: [{
 			action: "save",
-			callback: (e, t) => Gm(t.form),
+			callback: (e, t) => Ym(t.form),
 			class: "btn btn-primary",
 			default: !0,
 			icon: "fa-solid fa-check",
@@ -5955,14 +6041,14 @@ async function Um(t) {
 		window: { title: `Damage Type — ${t.name ?? "Magic"}` }
 	});
 	if (!Array.isArray(r)) return;
-	let i = cm(r);
+	let i = fm(r);
 	try {
-		await t.update({ [`flags.${e}.${im}`]: i });
+		await t.update({ [`flags.${e}.${cm}`]: i });
 	} catch (t) {
 		a(`${e} | Could not update magic damage types`, { error: t }), ui.notifications?.error("Could not save Damage Types for this item.");
 	}
 }
-function Wm(e) {
+function Jm(e) {
 	let t = document.createElement("div"), n = document.createElement("fieldset"), r = document.createElement("legend"), i = document.createElement("p");
 	n.classList.add("fieldset"), r.classList.add("fieldset-legend"), r.textContent = "Damage Types", i.classList.add("label"), i.textContent = "Choose the critical table types this damaging magic item can use.", n.append(r, i);
 	for (let t of b) {
@@ -5971,94 +6057,94 @@ function Wm(e) {
 	}
 	return t.append(n), t;
 }
-function Gm(e) {
-	return e ? cm([...e.querySelectorAll("input[name=\"damageType\"]:checked")].map((e) => e.value)) : [];
+function Ym(e) {
+	return e ? fm([...e.querySelectorAll("input[name=\"damageType\"]:checked")].map((e) => e.value)) : [];
 }
-function Km(e) {
-	let t = qm(e.target);
-	t && (e.preventDefault(), e.stopPropagation(), Jm(t));
+function Xm(e) {
+	let t = Zm(e.target);
+	t && (e.preventDefault(), e.stopPropagation(), Qm(t));
 }
-function qm(e) {
-	if (e instanceof Element) return e.closest(Im) ?? void 0;
+function Zm(e) {
+	if (e instanceof Element) return e.closest(Bm) ?? void 0;
 }
-async function Jm(e) {
-	let t = e.closest(`.${Em}__sheet-row`)?.dataset.echItemUuid;
+async function Qm(e) {
+	let t = e.closest(`.${Am}__sheet-row`)?.dataset.echItemUuid;
 	if (!t) return;
 	let n = await fromUuid(t);
-	if (!Zm(n)) return;
+	if (!th(n)) return;
 	if (n.type === "spell" || n.type === "prayer") {
-		Hm(n);
+		Km(n);
 		return;
 	}
-	let r = Lm.get(t);
+	let r = Vm.get(t);
 	if (r) {
 		r(n);
 		return;
 	}
-	Hm(n);
+	Km(n);
 }
-function Ym() {
+function $m() {
 	let e = game.wfrp4e?.apps?.ItemProperties;
-	if (Xm(e)) return e;
+	if (eh(e)) return e;
 }
-function Xm(e) {
+function eh(e) {
 	return typeof e == "function";
 }
-function Zm(e) {
+function th(e) {
 	return typeof e == "object" && !!e;
 }
 //#endregion
 //#region src/module/wfrp4e/wounding-properties/actor-sheet.ts
-var Qm = /* @__PURE__ */ new WeakSet();
-function $m(e, t) {
+var nh = /* @__PURE__ */ new WeakSet();
+function rh(e, t) {
 	if (!(t instanceof HTMLElement)) return;
-	let n = eh(t, "combat"), r = eh(t, "trappings");
-	n && (th(n), nh(e, n)), r && (rh(e, r), !Qm.has(r) && (new MutationObserver(() => {
-		rh(e, r);
+	let n = ih(t, "combat"), r = ih(t, "trappings");
+	n && (ah(n), oh(e, n)), r && (sh(e, r), !nh.has(r) && (new MutationObserver(() => {
+		sh(e, r);
 	}).observe(r, {
 		childList: !0,
 		subtree: !0
-	}), Qm.add(r)));
+	}), nh.add(r)));
 }
-function eh(e, t) {
+function ih(e, t) {
 	return e.matches(`section[data-tab="${t}"]`) ? e : e.querySelector(`section[data-tab="${t}"]`) ?? void 0;
 }
-function th(e) {
+function ah(e) {
 	let t = new Set(Object.values(S)), n = e.querySelectorAll(".item-property-row a[data-action=\"itemPropertyDropdown\"][data-type=\"qualities\"]");
 	for (let e of n) t.has(e.textContent.trim()) && e.classList.add("ech-wounding-property-combat-text");
 }
-function nh(e, t) {
+function oh(e, t) {
 	let n = t.querySelectorAll(".list-row[data-uuid] .item-property-row:not([data-ech-inference-checked=\"true\"])");
 	for (let t of n) {
 		t.dataset.echInferenceChecked = "true";
-		let n = oh(e, t);
-		if (lh(n)) for (let e of n.categories) t.append(uh("combat", e, n));
+		let n = uh(e, t);
+		if (ph(n)) for (let e of n.categories) t.append(mh("combat", e, n));
 	}
 }
-function rh(e, t) {
-	ih(t), ah(e, t);
+function sh(e, t) {
+	ch(t), lh(e, t);
 }
-function ih(e) {
+function ch(e) {
 	let t = new Set(Object.values(S)), n = e.querySelectorAll(".tags .tag:not(.ech-inferred-damage-type)");
 	for (let e of n) t.has(e.textContent.trim()) && e.classList.add("ech-wounding-property-trappings-badge");
 }
-function ah(e, t) {
+function lh(e, t) {
 	let n = t.querySelectorAll(".list-row[data-uuid] .tags:not([data-ech-inference-checked=\"true\"])");
 	for (let t of n) {
 		t.dataset.echInferenceChecked = "true";
-		let n = oh(e, t);
-		if (lh(n)) for (let e of n.categories) t.append(uh("trappings", e, n));
+		let n = uh(e, t);
+		if (ph(n)) for (let e of n.categories) t.append(mh("trappings", e, n));
 	}
 }
-function oh(t, n) {
+function uh(t, n) {
 	let r = n.closest(".list-row[data-uuid]")?.dataset.uuid;
 	if (r) try {
-		let n = sh(t, r);
-		if (!ch(n)) {
+		let n = dh(t, r);
+		if (!fh(n)) {
 			a(`${e} | Inferred damage display skipped for ${r}: item unavailable or unsupported.`);
 			return;
 		}
-		let i = _m(n).resolution;
+		let i = xm(n).resolution;
 		return a(`${e} | Inferred damage display resolved ${r}: source=${i.source} categories=${i.categories.join(",") || "none"}`), i;
 	} catch (t) {
 		a(`${e} | Could not display inferred damage type`, {
@@ -6068,26 +6154,26 @@ function oh(t, n) {
 		return;
 	}
 }
-function sh(e, t) {
+function dh(e, t) {
 	let n = $(e), r = $(($(n?.actor) ?? $(n?.document))?.items), i = r?.get, a = t.split(".").at(-1);
 	if (!(typeof i != "function" || !a)) return i.call(r, a);
 }
-function ch(e) {
+function fh(e) {
 	let t = $(e), n = $(t?.system);
 	return t?.type === "weapon" || t?.type === "ammunition" || n?.isWeapon === !0;
 }
-function lh(e) {
+function ph(e) {
 	return e?.source === "weaponProperty" || e?.source === "weaponType";
 }
-function uh(e, t, n) {
-	let r = document.createElement(e === "combat" ? "span" : "div"), i = dh(t, n.source, n.matches);
+function mh(e, t, n) {
+	let r = document.createElement(e === "combat" ? "span" : "div"), i = hh(t, n.source, n.matches);
 	return r.classList.add("ech-inferred-damage-type", `ech-inferred-damage-type--${e}`), e === "trappings" && r.classList.add("tag"), r.dataset.echDamageCategory = t, r.dataset.tooltip = i, r.setAttribute("aria-label", i), r.textContent = te[t], r;
 }
-function dh(e, t, n) {
-	let r = n.filter((t) => t.category === e).map((e) => fh(e.key, t)), i = t === "weaponProperty" ? "item property" : "weapon type";
+function hh(e, t, n) {
+	let r = n.filter((t) => t.category === e).map((e) => gh(e.key, t)), i = t === "weaponProperty" ? "item property" : "weapon type";
 	return r.length > 0 ? `Inferred from ${r.join(", ")}` : `Inferred from ${i}`;
 }
-function fh(e, t) {
+function gh(e, t) {
 	if (t === "weaponProperty") {
 		let t = game.wfrp4e?.utility?.qualityList?.() ?? {}, n = El(e);
 		for (let [e, r] of Object.entries(t)) if (El(e) === n || El(r) === n) return r;
@@ -6096,10 +6182,10 @@ function fh(e, t) {
 }
 //#endregion
 //#region src/module/wfrp4e/wounding-properties/debug.ts
-function ph(e) {
+function _h(e) {
 	if (!(typeof e != "object" || !e)) return e.constructor?.name;
 }
-function mh(e) {
+function vh(e) {
 	if (e) return {
 		id: e.id,
 		name: e.name,
@@ -6109,29 +6195,29 @@ function mh(e) {
 }
 //#endregion
 //#region src/module/wfrp4e/wounding-properties/sheet-box.ts
-function hh(e, t, n) {
+function yh(e, t, n) {
 	let r = document.createElement("div");
-	r.classList.add("attribute-box", "top-label", `${Em}__sheet-row`);
-	let i = Bm(n);
-	i && (r.dataset.echItemUuid = i, Vm(i, _h(e, n)));
+	r.classList.add("attribute-box", "top-label", `${Am}__sheet-row`);
+	let i = Wm(n);
+	i && (r.dataset.echItemUuid = i, Gm(i, xh(e, n)));
 	let a = document.createElement("div");
 	a.classList.add("label"), a.style.gridColumn = "1 / span 12", a.innerHTML = "<label><a data-ech-action=\"configureProperties\">Damage Type <i class=\"fas fa-cog\"></i></a></label>";
 	let o = document.createElement("div");
 	o.classList.add("field"), o.style.gridColumn = "1 / span 12";
 	let s = document.createElement("input");
-	return s.type = "text", s.value = t.join(","), s.readOnly = !0, o.append(s), r.append(a, o), gh(r, n), r;
+	return s.type = "text", s.value = t.join(","), s.readOnly = !0, o.append(s), r.append(a, o), bh(r, n), r;
 }
-function gh(e, t) {
+function bh(e, t) {
 	e.querySelector("a[data-ech-action=\"configureProperties\"]")?.addEventListener("click", (e) => {
-		e.preventDefault(), Hm(t);
+		e.preventDefault(), Km(t);
 	});
 }
-function _h(e, t) {
-	return vh(e) || ((e) => {
-		Hm(e ?? t);
+function xh(e, t) {
+	return Sh(e) || ((e) => {
+		Km(e ?? t);
 	});
 }
-function vh(e) {
+function Sh(e) {
 	if (typeof e != "object" || !e) return;
 	let t = e.constructor?.DEFAULT_OPTIONS?.actions?.configureProperties;
 	if (typeof t == "function") return (e) => {
@@ -6140,7 +6226,7 @@ function vh(e) {
 }
 //#endregion
 //#region src/module/wfrp4e/wounding-properties/sheet.ts
-function yh(t) {
+function Ch(t) {
 	if (!(t instanceof HTMLElement)) {
 		a(`${e} | ItemProperties render hook skipped: element is not HTMLElement`, { elementType: typeof t });
 		return;
@@ -6150,14 +6236,14 @@ function yh(t) {
 		a(`${e} | ItemProperties render hook skipped: quality column not found.`);
 		return;
 	}
-	let r = xh(n);
+	let r = Th(n);
 	if (r.length === 0) {
 		a(`${e} | ItemProperties render hook found no damage type rows`, { checkboxCount: n.querySelectorAll("input[type=\"checkbox\"]").length });
 		return;
 	}
 	a(`${e} | Grouping ItemProperties damage type rows`, { woundingRowCount: r.length });
-	let i = n.querySelector(`.${Em}`), o = i ?? document.createElement("div");
-	i || (o.classList.add(Em), o.append(Sh()));
+	let i = n.querySelector(`.${Am}`), o = i ?? document.createElement("div");
+	i || (o.classList.add(Am), o.append(Eh()));
 	for (let e of r) o.append(e);
 	let s = n.querySelector("input[name=\"custom-quality\"]")?.parentElement;
 	if (s) {
@@ -6166,88 +6252,88 @@ function yh(t) {
 	}
 	n.append(o);
 }
-function bh(t, n) {
+function wh(t, n) {
 	if (!(n instanceof HTMLElement)) {
 		a(`${e} | Item sheet render hook skipped: element is not HTMLElement`, {
-			applicationName: ph(t),
+			applicationName: _h(t),
 			elementType: typeof n
 		});
 		return;
 	}
-	let r = Mm(t), i = r?.document ?? r?.item;
-	if (!km(i)) {
+	let r = Im(t), i = r?.document ?? r?.item;
+	if (!Nm(i)) {
 		a(`${e} | Item sheet render hook skipped: unsupported document`, {
-			applicationName: ph(t),
-			document: mh(i)
+			applicationName: _h(t),
+			document: vh(i)
 		});
 		return;
 	}
 	a(`${e} | Item sheet render hook inspecting supported document`, {
-		applicationName: ph(t),
-		document: mh(i)
+		applicationName: _h(t),
+		document: vh(i)
 	});
-	let o = wh(n);
+	let o = Oh(n);
 	if (!o) {
-		a(`${e} | Item sheet qualities box not found; trying standalone damage row`, { document: mh(i) }), Ch(t, n, i);
+		a(`${e} | Item sheet qualities box not found; trying standalone damage row`, { document: vh(i) }), Dh(t, n, i);
 		return;
 	}
 	let s = o.querySelector(".field input");
 	if (!s) {
-		a(`${e} | Item sheet qualities input not found`, { document: mh(i) });
+		a(`${e} | Item sheet qualities input not found`, { document: vh(i) });
 		return;
 	}
-	let c = Th(s.value), l = c.wounding.length > 0 ? c.wounding : jm(i);
+	let c = kh(s.value), l = c.wounding.length > 0 ? c.wounding : Fm(i);
 	if (l.length === 0) {
 		a(`${e} | Item sheet qualities contain no damage type labels`, {
-			document: mh(i),
+			document: vh(i),
 			displayedQualities: s.value
 		});
 		return;
 	}
 	a(`${e} | Splitting item sheet damage type labels into their own row`, {
-		document: mh(i),
+		document: vh(i),
 		normalQualities: c.normal,
 		woundingQualities: c.wounding
-	}), s.value = c.normal.join(","), o.parentElement?.querySelector(`.${Em}__sheet-row`)?.remove(), o.after(hh(t, l, i));
+	}), s.value = c.normal.join(","), o.parentElement?.querySelector(`.${Am}__sheet-row`)?.remove(), o.after(yh(t, l, i));
 }
-function xh(e) {
+function Th(e) {
 	let t = e.querySelectorAll("input[type=\"checkbox\"]"), n = [];
 	for (let e of t) {
-		if (!Dm.has(e.name)) continue;
+		if (!jm.has(e.name)) continue;
 		let t = e.closest(".form-group");
 		t && n.push(t);
 	}
 	return n;
 }
-function Sh() {
+function Eh() {
 	let e = document.createElement("h2");
-	return e.classList.add("property-header", `${Em}__header`), e.textContent = "Damage Type", e;
+	return e.classList.add("property-header", `${Am}__header`), e.textContent = "Damage Type", e;
 }
-function Ch(t, n, r) {
-	if (!Am(r)) {
-		a(`${e} | Standalone damage type row skipped: unsupported document`, { document: mh(r) });
+function Dh(t, n, r) {
+	if (!Pm(r)) {
+		a(`${e} | Standalone damage type row skipped: unsupported document`, { document: vh(r) });
 		return;
 	}
 	if (n.querySelector(".ech-wounding-properties__sheet-row")) {
-		a(`${e} | Standalone damage type row skipped: row already exists`, { document: mh(r) });
+		a(`${e} | Standalone damage type row skipped: row already exists`, { document: vh(r) });
 		return;
 	}
-	let i = Eh(n);
+	let i = Ah(n);
 	if (!i) {
-		a(`${e} | Standalone damage type row skipped: damage fieldset not found`, { document: mh(r) });
+		a(`${e} | Standalone damage type row skipped: damage fieldset not found`, { document: vh(r) });
 		return;
 	}
-	let o = jm(r);
+	let o = Fm(r);
 	a(`${e} | Appending standalone damage type row`, {
-		document: mh(r),
+		document: vh(r),
 		labels: o
-	}), i.after(hh(t, o, r));
+	}), i.after(yh(t, o, r));
 }
-function wh(e) {
+function Oh(e) {
 	let t = e.querySelectorAll("a[data-action=\"configureProperties\"]");
 	for (let e of t) if (e.textContent.trim().startsWith("Qualities")) return e.closest(".attribute-box") ?? void 0;
 }
-function Th(e) {
+function kh(e) {
 	let t = [], n = [], r = new Set(Object.values(S));
 	for (let i of e.split(",")) {
 		let e = i.trim();
@@ -6264,88 +6350,88 @@ function Th(e) {
 		wounding: n
 	};
 }
-function Eh(e) {
+function Ah(e) {
 	let t = e.querySelectorAll("fieldset");
 	for (let e of t) if (e.querySelector("legend")?.textContent.trim() === "Damage") return e;
 }
 //#endregion
 //#region src/module/wfrp4e/wounding-properties/display.ts
-var Dh = !1, Oh = Symbol.for(`${e}.woundingPropertiesContextPatched`);
-function kh() {
-	if (zm(), Mh(), Dh) {
+var jh = !1, Mh = Symbol.for(`${e}.woundingPropertiesContextPatched`);
+function Nh() {
+	if (Um(), Ih(), jh) {
 		a(`${e} | Wounding property display hooks already installed.`);
 		return;
 	}
 	Hooks.on("renderItemProperties", (e, t) => {
-		yh(t);
+		Ch(t);
 	}), Hooks.on("renderApplicationV2", (e, t) => {
-		bh(e, t), $m(e, t), jh(e) && Ah(e);
+		wh(e, t), rh(e, t), Fh(e) && Ph(e);
 	}), Hooks.on("renderBaseWFRP4eActorSheet", (e, t) => {
-		$m(e, t), Ah(e);
-	}), Dh = !0, a(`${e} | Wounding property display hooks installed.`);
+		rh(e, t), Ph(e);
+	}), jh = !0, a(`${e} | Wounding property display hooks installed.`);
 }
-function Ah(t, n = 5) {
+function Ph(t, n = 5) {
 	typeof t != "object" || !t || requestAnimationFrame(() => {
 		let r = t.element;
 		if (r instanceof HTMLElement && r.isConnected) {
-			a(`${e} | Styling committed WFRP actor sheet with ${r.querySelectorAll(".item-property-row").length} property rows.`), $m(t, r);
+			a(`${e} | Styling committed WFRP actor sheet with ${r.querySelectorAll(".item-property-row").length} property rows.`), rh(t, r);
 			return;
 		}
 		if (n > 1) {
-			Ah(t, n - 1);
+			Ph(t, n - 1);
 			return;
 		}
 		a(`${e} | Committed WFRP actor sheet element was unavailable.`);
 	});
 }
-function jh(e) {
+function Fh(e) {
 	if (typeof e != "object" || !e) return !1;
 	let t = e.actor;
 	return typeof t == "object" && !!t;
 }
-function Mh() {
-	let t = Nh()?.prototype, n = t?._prepareContext;
+function Ih() {
+	let t = Lh()?.prototype, n = t?._prepareContext;
 	if (!t || !n) {
 		a(`${e} | ItemProperties context patch skipped: application unavailable.`);
 		return;
 	}
-	if (Ph(n)) {
+	if (Rh(n)) {
 		a(`${e} | ItemProperties context patch already installed.`);
 		return;
 	}
 	let r = async function(...e) {
 		let t = this.document;
-		km(t) && (this.qualities = Om(this.qualities ?? {}));
+		Nm(t) && (this.qualities = Mm(this.qualities ?? {}));
 		let r = await n.apply(this, e);
-		return Fh(this, r), r;
+		return zh(this, r), r;
 	};
-	Object.defineProperty(r, Oh, { value: !0 }), t._prepareContext = r, a(`${e} | ItemProperties context patch installed.`);
+	Object.defineProperty(r, Mh, { value: !0 }), t._prepareContext = r, a(`${e} | ItemProperties context patch installed.`);
 }
-function Nh() {
+function Lh() {
 	let e = game.wfrp4e?.apps?.ItemProperties;
 	return typeof e == "function" ? e : void 0;
 }
-function Ph(e) {
-	return !!e[Oh];
+function Rh(e) {
+	return !!e[Mh];
 }
-function Fh(t, n) {
-	let r = Mm(t), i = Nm(n), o = r?.document;
-	if (!r || !i || !km(o)) {
+function zh(t, n) {
+	let r = Im(t), i = Lm(n), o = r?.document;
+	if (!r || !i || !Nm(o)) {
 		a(`${e} | Skipping ItemProperties damage type context append`, {
-			applicationName: Ih(t),
+			applicationName: Bh(t),
 			hasItemProperties: !!r,
 			hasRenderContext: !!i,
-			document: Lh(o),
-			supportsDamageTypeProperties: km(o)
+			document: Vh(o),
+			supportsDamageTypeProperties: Nm(o)
 		});
 		return;
 	}
 	a(`${e} | Appending damage types to ItemProperties context`, {
-		applicationName: Ih(t),
-		document: Lh(o),
+		applicationName: Bh(t),
+		document: Vh(o),
 		originalQualityCount: Object.keys(r.qualities ?? {}).length,
 		renderedQualityCount: i.qualities?.length ?? 0
-	}), r.qualities = Om(r.qualities ?? {}), i.qualities ??= [];
+	}), r.qualities = Mm(r.qualities ?? {}), i.qualities ??= [];
 	for (let e of b) {
 		let t = x[e];
 		i.qualities.some((e) => e.key === t) || i.qualities.push({
@@ -6356,14 +6442,14 @@ function Fh(t, n) {
 		});
 	}
 	a(`${e} | ItemProperties context after damage type append`, {
-		document: Lh(o),
+		document: Vh(o),
 		renderedQualityCount: i.qualities.length
 	});
 }
-function Ih(e) {
+function Bh(e) {
 	if (!(typeof e != "object" || !e)) return e.constructor?.name;
 }
-function Lh(e) {
+function Vh(e) {
 	if (typeof e != "object" || !e) return;
 	let t = e;
 	return {
@@ -6375,8 +6461,8 @@ function Lh(e) {
 }
 //#endregion
 //#region src/module/wfrp4e/damage-qualities.ts
-var Rh = !1;
-function zh() {
+var Hh = !1;
+function Uh() {
 	let t = game.wfrp4e?.config;
 	if (!t) {
 		a(`${e} | Damage quality registration skipped: WFRP config unavailable.`);
@@ -6397,13 +6483,13 @@ function zh() {
 	a(`${e} | Damage qualities registered`, {
 		count: b.length,
 		qualityKeys: b.map((e) => x[e])
-	}), Bh(), kh();
+	}), Wh(), Nh();
 }
-function Bh() {
+function Wh() {
 	let t = game.wfrp4e?.utility, n = t?.qualityList;
-	if (Rh || !t || !n) {
+	if (Hh || !t || !n) {
 		a(`${e} | Quality list patch skipped`, {
-			qualityListPatchInstalled: Rh,
+			qualityListPatchInstalled: Hh,
 			hasUtility: !!t,
 			hasOriginalQualityList: !!n
 		});
@@ -6411,47 +6497,47 @@ function Bh() {
 	}
 	t.qualityList = function(e) {
 		let t = n.call(this, e);
-		return e === "armor" ? t : Om(t);
-	}, Rh = !0, a(`${e} | Quality list patch installed.`);
+		return e === "armor" ? t : Mm(t);
+	}, Hh = !0, a(`${e} | Quality list patch installed.`);
 }
 //#endregion
 //#region src/module/wfrp4e/zero-wound-critical-links.ts
-var Vh = "data-ech-source-item-uuid", Hh = "data-ech-critical-location", Uh = !1;
-function Wh() {
-	Uh ||= (Gh(), document.addEventListener("click", Yh, !0), !0);
+var Gh = "data-ech-source-item-uuid", Kh = "data-ech-critical-location", qh = !1;
+function Jh() {
+	qh ||= (Yh(), document.addEventListener("click", $h, !0), !0);
 }
-function Gh() {
+function Yh() {
 	let e = CONFIG.Actor?.documentClass?.prototype, t = e?.applyDamage;
 	typeof t != "function" || !e || (e.applyDamage = async function(e, n = {}) {
-		let r = await t.call(this, e, n), i = Kh(n);
-		return typeof r != "string" || !i || !r.includes("critical-roll") ? r : Jh(r, i, qh(n));
+		let r = await t.call(this, e, n), i = Xh(n);
+		return typeof r != "string" || !i || !r.includes("critical-roll") ? r : Qh(r, i, Zh(n));
 	});
 }
-function Kh(e) {
-	let t = tg(tg(e.sourceTest)?.item), n = tg(tg(tg(e.opposedTest)?.attackerTest)?.item), r = tg(e.sourceItem), i = t?.uuid ?? n?.uuid ?? r?.uuid;
+function Xh(e) {
+	let t = ag(ag(e.sourceTest)?.item), n = ag(ag(ag(e.opposedTest)?.attackerTest)?.item), r = ag(e.sourceItem), i = t?.uuid ?? n?.uuid ?? r?.uuid;
 	return typeof i == "string" ? i : void 0;
 }
-function qh(e) {
-	let t = tg(tg(e.opposedTest)?.result)?.hitloc, n = tg(t)?.value, r = e.loc, i;
+function Zh(e) {
+	let t = ag(ag(e.opposedTest)?.result)?.hitloc, n = ag(t)?.value, r = e.loc, i;
 	return typeof n == "string" ? i = n : typeof r == "string" && (i = r), i && Il(i) ? i : void 0;
 }
-function Jh(e, t, n) {
-	let r = [`${Vh}="${eg(t)}"`, n ? `${Hh}="${eg(n)}"` : void 0].filter(Boolean).join(" ");
+function Qh(e, t, n) {
+	let r = [`${Gh}="${ig(t)}"`, n ? `${Kh}="${ig(n)}"` : void 0].filter(Boolean).join(" ");
 	return e.replaceAll(/<a\b(?![^>]*\bdata-ech-source-item-uuid=)(?=[^>]*\bcritical-roll\b)/g, `<a ${r}`);
 }
-function Yh(e) {
+function $h(e) {
 	let t = e.target;
 	if (!(t instanceof Element) || !Jl()) return;
-	let n = t.closest(`[data-action="clickTable"][${Vh}]`);
-	!(n instanceof HTMLElement) || !$h(n.dataset.table) || (e.preventDefault(), e.stopPropagation(), e.stopImmediatePropagation(), Xh(n).catch((e) => {
-		Zh("Drowsy's WFRP4e Expanded Damage System could not roll an annotated zero-wound critical. See the browser console for details.", e);
+	let n = t.closest(`[data-action="clickTable"][${Gh}]`);
+	!(n instanceof HTMLElement) || !rg(n.dataset.table) || (e.preventDefault(), e.stopPropagation(), e.stopImmediatePropagation(), eg(n).catch((e) => {
+		tg("Drowsy's WFRP4e Expanded Damage System could not roll an annotated zero-wound critical. See the browser console for details.", e);
 	}));
 }
-async function Xh(e) {
+async function eg(e) {
 	let t = e.dataset.table, n = game.wfrp4e?.tables?.formatChatRoll;
 	if (!t || typeof n != "function") return;
 	let r = e.closest("[data-message-id]")?.dataset.messageId, i = Number.parseInt(e.dataset.modifier ?? "0", 10) || 0, a = await n(t, {
-		criticalLocation: e.dataset.echCriticalLocation ?? Qh(r),
+		criticalLocation: e.dataset.echCriticalLocation ?? ng(r),
 		messageId: r,
 		modifier: i,
 		showRoll: !0,
@@ -6461,37 +6547,37 @@ async function Xh(e) {
 	let o = game.wfrp4e?.utility?.chatDataSetup, s = typeof o == "function" ? o("", game.settings.get("core", "rollMode"), !0) : { content: "" };
 	s.content = a, await ChatMessage.create(s);
 }
-function Zh(t, n) {
+function tg(t, n) {
 	c(`${e} | ${t}`, n), ui.notifications?.error(t);
 }
-function Qh(e) {
+function ng(e) {
 	if (!e) return;
-	let t = tg(tg(tg(game.messages.get(e)?.system)?.test)?.result)?.hitloc, n = tg(t)?.result;
+	let t = ag(ag(ag(game.messages.get(e)?.system)?.test)?.result)?.hitloc, n = ag(t)?.result;
 	return typeof n == "string" ? n : void 0;
 }
-function $h(e) {
+function rg(e) {
 	return typeof e == "string" && /^crit(?:head|body|arm|leg|larm|rarm|lleg|rleg)$/i.test(e);
 }
-function eg(e) {
+function ig(e) {
 	return e.replaceAll("&", "&amp;").replaceAll("\"", "&quot;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 }
-function tg(e) {
+function ag(e) {
 	return typeof e == "object" && e ? e : void 0;
 }
 //#endregion
 //#region src/module/hooks/register-module-hooks.ts
-function ng() {
+function og() {
 	Hooks.once("init", () => {
-		o(`${e} | Initializing`), Np(), ql(), a(`${e} | init hook running`, {
+		o(`${e} | Initializing`), Lp(), ql(), a(`${e} | init hook running`, {
 			foundryVersion: game.version,
 			systemId: game.system?.id,
 			userIsGM: game.user?.isGM
-		}), kh(), Sl(), zh();
+		}), Nh(), Sl(), Uh();
 	}), Hooks.once("ready", () => {
-		rg();
+		sg();
 	});
 }
-async function rg() {
+async function sg() {
 	if (a(`${e} | ready hook running`, {
 		foundryVersion: game.version,
 		systemId: game.system?.id,
@@ -6503,11 +6589,11 @@ async function rg() {
 		s(`${e} | Loaded outside ${t}; skipping WFRP integration.`);
 		return;
 	}
-	vu(), await Xl(), a(`${e} | ready hook after mapping normalization`, { settings: ru() }), zh(), await p(), lu(), ym(), Wh(), o(`${e} | Ready`);
+	vu(), await Xl(), a(`${e} | ready hook after mapping normalization`, { settings: ru() }), Uh(), await p(), lu(), Cm(), Jh(), o(`${e} | Ready`);
 }
 //#endregion
 //#region src/main.ts
-ng();
+og();
 //#endregion
 
 //# sourceMappingURL=wfrp4e-expanded-critical-hits.mjs.map
