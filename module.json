@@ -2,7 +2,7 @@
   "id": "wfrp4e-expanded-critical-hits",
   "title": "Drowsy's WFRP4e Expanded Damage System",
   "description": "Expanded damage and critical hit support for the WFRP4e game system.",
-  "version": "0.1.28",
+  "version": "0.1.29",
   "authors": [
     {
       "name": "Drowsy's WFRP4e Expanded Damage System contributors"
@@ -69,5 +69,5 @@
   ],
   "url": "https://github.com/jeremyglebe/Foundry.Warhammer.Expanded-Damage",
   "manifest": "https://github.com/jeremyglebe/Foundry.Warhammer.Expanded-Damage/releases/latest/download/module.json",
-  "download": "https://github.com/jeremyglebe/Foundry.Warhammer.Expanded-Damage/releases/download/v0.1.28/module.zip"
+  "download": "https://github.com/jeremyglebe/Foundry.Warhammer.Expanded-Damage/releases/download/v0.1.29/module.zip"
 }
