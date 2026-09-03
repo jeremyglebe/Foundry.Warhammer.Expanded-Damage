@@ -8,7 +8,7 @@ damage tools for the WFRP4e system in Foundry VTT.
 Use this manifest URL in Foundry's **Install Module** dialog:
 
 ```text
-https://github.com/jeremyglebe/FoundryVTT-WFRP-Expanded-Wounding/releases/latest/download/module.json
+https://github.com/jeremyglebe/Foundry.Warhammer.Expanded-Damage/releases/latest/download/module.json
 ```
 
 After installation, enable **Drowsy's WFRP4e Expanded Damage System** in your WFRP4e world.
@@ -92,6 +92,6 @@ The current mapping settings are JSON text fields. A friendlier mapping editor i
 ## Links
 
 - Manifest:
-  https://github.com/jeremyglebe/FoundryVTT-WFRP-Expanded-Wounding/releases/latest/download/module.json
-- Releases: https://github.com/jeremyglebe/FoundryVTT-WFRP-Expanded-Wounding/releases
-- Source: https://github.com/jeremyglebe/fvtt.wfrp.wounding
+  https://github.com/jeremyglebe/Foundry.Warhammer.Expanded-Damage/releases/latest/download/module.json
+- Releases: https://github.com/jeremyglebe/Foundry.Warhammer.Expanded-Damage/releases
+- Source: https://github.com/jeremyglebe/fvtt.wfrp.expanded-damage
